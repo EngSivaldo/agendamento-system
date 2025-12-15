@@ -32,10 +32,14 @@
                                     {{ booking.data_agendamento.strftime('%d/%m/%Y') }}
                                 </span>
                             </li>
+                            
                             <li class="mb-2">
                                 <strong><i class="fas fa-clock me-2 text-warning"></i> Horário:</strong> 
-                                <span class="text-white">{{ booking.schedule_slot.hora_inicio }} - {{ booking.schedule_slot.hora_fim }}</span>
+                                <span class="text-white">
+                                    {{ booking.data_agendamento.strftime('%H:%M') }}
+                                </span>
                             </li>
+
                             <li class="mb-3">
                                 <strong><i class="fas fa-hourglass-half me-2 text-warning"></i> Duração:</strong> 
                                 <span class="text-white">{{ booking.servico.duracao }} minutos</span>
@@ -51,15 +55,16 @@
                                 </span>
                             </div>
                             
-                            {% set data_formatada = booking.data_agendamento.strftime('%d/%m/%Y') %}
+                            {% set data_formatada = booking.data_agendamento.strftime('%d/%m/%Y %H:%M') %}
+                            
                             {% if booking.status == 'Pendente' and booking.data_agendamento >= hoje %}
                             <form method="POST" 
                             action="{{ url_for('client.cancel_booking', booking_id=booking.id) }}"
                             onsubmit="return confirm('Deseja realmente cancelar o agendamento de {{ booking.servico.nome }} para {{ data_formatada }}?');">
-                          <button type="submit" class="btn btn-sm btn-outline-danger fw-bold">
-                              <i class="fas fa-times-circle me-1"></i> Cancelar
-                          </button>
-                      </form>
+                                <button type="submit" class="btn btn-sm btn-outline-danger fw-bold">
+                                    <i class="fas fa-times-circle me-1"></i> Cancelar
+                                </button>
+                            </form>
                             {% endif %}
                             
                         </div>

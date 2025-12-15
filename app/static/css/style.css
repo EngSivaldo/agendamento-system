@@ -140,3 +140,10 @@
 .list-group-item {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
+
+.btn-slot.btn-unavailable {
+  background-color: #444; /* Cor mais escura */
+  color: #888; /* Texto cinza */
+  cursor: not-allowed;
+  border: 1px solid red;
+}

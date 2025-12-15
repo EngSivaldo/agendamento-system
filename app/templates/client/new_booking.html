@@ -21,7 +21,10 @@
 
             <div class="row">
                 <div class="col-lg-4 mb-4">
-                    <div class="p-3 bg-dark-pro rounded border border-secondary h-100">
+                    <div id="service-details" 
+                         data-service-id="{{ service.id }}"
+                         class="p-3 bg-dark-pro rounded border border-secondary h-100">
+                        
                         <h5 class="text-warning mb-3"><i class="fas fa-info-circle me-2"></i> Detalhes</h5>
                         <ul class="list-unstyled text-white-50 small">
                             <li><i class="fas fa-clock me-2 text-warning"></i> Duração: {{ service.duracao if service else 'N/A' }} minutos</li>
@@ -40,24 +43,28 @@
                     </div>
 
                     <div id="booking-steps">
-                        <h4 class="text-white"><i class="fas fa-calendar-day me-2 text-warning"></i> 1. Escolha a Data</h4>
-                        <p class="text-white-50">Em breve: um seletor de calendário intuitivo aparecerá aqui para você escolher a data.</p>
                         
-                        <form method="POST" action="#"> 
+                        <form method="POST" action="{{ url_for('client.finalize_booking') }}" id="booking-form"> 
+                            <input type="hidden" name="service_id" value="{{ service.id }}">
+                            
+                            <input type="hidden" name="datetime_slot" id="datetime_slot" required>
+
+                            <h4 class="text-white"><i class="fas fa-calendar-day me-2 text-warning"></i> 1. Escolha a Data</h4>
+                            
                             <div class="mb-3">
                                 <label for="data_agendamento" class="form-label text-white-50">Data Desejada:</label>
                                 <input type="date" class="form-control bg-dark text-white border-secondary" id="data_agendamento" name="data_agendamento" required>
                             </div>
                             
                             <h4 class="text-white mt-5"><i class="fas fa-clock me-2 text-warning"></i> 2. Horários Disponíveis</h4>
-                            <p class="text-white-50">Em breve: os horários disponíveis (slots) para a data selecionada aparecerão abaixo.</p>
+                            <p class="text-white-50">Clique em um horário para selecioná-lo e prosseguir. Horários marcados com **(X)** estão indisponíveis.</p>
 
-                            <div class="p-3 bg-dark-pro rounded border border-secondary text-center text-muted">
-                                * Horários serão carregados dinamicamente via JavaScript/Ajax *
+                            <div id="available-slots-container" class="p-3 bg-dark-pro rounded border border-secondary text-center text-muted">
+                                * Por favor, selecione uma data para ver os horários. *
                             </div>
                             
                             <div class="mt-5 border-top border-secondary pt-4">
-                                <button type="submit" class="btn btn-success fw-bold me-3" disabled>
+                                <button type="submit" class="btn btn-success fw-bold me-3" id="finalize-button" disabled>
                                     <i class="fas fa-check-circle me-2"></i> Finalizar Agendamento
                                 </button>
                                 <a href="{{ url_for('client.index') }}" class="btn btn-secondary">
@@ -72,4 +79,123 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+
+{% block scripts %}
+<style>
+    /* Estilo para slots indisponíveis */
+    .btn-slot-unavailable {
+        background-color: #333 !important; /* Fundo escuro */
+        color: #777 !important; /* Texto cinza */
+        border-color: #555 !important;
+        cursor: not-allowed;
+        text-decoration: line-through; /* Linha no texto */
+        opacity: 0.7;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Elementos chave
+        const dateInput = document.getElementById('data_agendamento');
+        const slotsContainer = document.getElementById('available-slots-container');
+        const serviceId = document.getElementById('service-details').dataset.serviceId;
+        const datetimeSlotInput = document.getElementById('datetime_slot');
+        const finalizeButton = document.getElementById('finalize-button');
+
+        // Função para selecionar um slot (SOMENTE DISPONÍVEL)
+        function selectSlot(event) {
+            // Remove a seleção de todos os botões (apenas os que não estão indisponíveis)
+            document.querySelectorAll('.slot-button:not(.btn-slot-unavailable)').forEach(btn => {
+                btn.classList.remove('btn-warning');
+                btn.classList.add('btn-outline-success');
+            });
+
+            // Adiciona a seleção ao botão clicado
+            const selectedButton = event.currentTarget;
+            selectedButton.classList.remove('btn-outline-success');
+            selectedButton.classList.add('btn-warning');
+            
+            // Define o valor do campo oculto e ativa o botão de finalizar
+            datetimeSlotInput.value = selectedButton.dataset.datetime;
+            finalizeButton.disabled = false;
+        }
+
+        // Função principal que carrega os slots via AJAX
+        function loadAvailableSlots() {
+            const selectedDate = dateInput.value; // Formato YYYY-MM-DD
+            
+            // Limpa seleções anteriores
+            datetimeSlotInput.value = '';
+            finalizeButton.disabled = true;
+
+            if (!selectedDate || !serviceId) {
+                slotsContainer.innerHTML = '<p class="text-muted">* Por favor, selecione uma data para ver os horários. *</p>';
+                return;
+            }
+
+            slotsContainer.innerHTML = '<p class="text-info"><i class="fas fa-spinner fa-spin me-2"></i> Verificando horários disponíveis...</p>';
+
+            // Endpoint corrigido: Certifique-se de que o URL da API está correto
+            fetch(`{{ url_for('client.available_slots') }}?service_id=${serviceId}&date=${selectedDate}`)
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(err => Promise.reject(err));
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    slotsContainer.innerHTML = '';
+                    if (data.slots && data.slots.length > 0) {
+                        data.slots.forEach(slot => {
+                            const button = document.createElement('button');
+                            button.type = 'button';
+                            button.classList.add('btn', 'm-2', 'slot-button');
+                            
+                            // 🚨 LÓGICA DE INDISPONIBILIDADE APLICADA 🚨
+                            if (slot.status === 'unavailable') {
+                                button.className += ' btn-slot-unavailable';
+                                button.disabled = true;
+                                
+                                // CORREÇÃO: Usar apenas slot.time para evitar o 'undefined'
+                                button.textContent = `${slot.time} (X)`; 
+                            } else {
+                                button.className += ' btn-outline-success';
+                                button.dataset.datetime = slot.datetime_slot; // YYYY-MM-DD HH:MM
+                                
+                                // CORREÇÃO: Usar apenas slot.time para evitar o 'undefined'
+                                button.textContent = `${slot.time}`; 
+                                
+                                // Adiciona o evento de seleção SOMENTE para slots disponíveis
+                                button.addEventListener('click', selectSlot);
+                            }
+
+                            slotsContainer.appendChild(button);
+                        });
+                    } else if (data.message) {
+                        slotsContainer.innerHTML = `<p class="text-warning"><i class="fas fa-exclamation-triangle me-2"></i> ${data.message}</p>`;
+                    } else {
+                        slotsContainer.innerHTML = '<p class="text-danger"><i class="fas fa-times-circle me-2"></i> Nenhum horário disponível para esta data.</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar slots:', error);
+                    let message = 'Erro desconhecido ao carregar horários.';
+                    if (error.error) {
+                        message = error.error; 
+                    }
+                    slotsContainer.innerHTML = `<p class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i> Erro: ${message}</p>`;
+                });
+        }
+
+        // 1. Carregar slots quando a data mudar
+        dateInput.addEventListener('change', loadAvailableSlots);
+        
+        // Carregar slots se a data já estiver preenchida ao carregar a página
+        if (dateInput.value) {
+            loadAvailableSlots();
+        }
+    });
+</script>
 {% endblock %}

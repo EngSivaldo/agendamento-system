@@ -1,4 +1,4 @@
-# app/__init__.py (VERSÃO CORRIGIDA E COMPLETA)
+# app/__init__.py (VERSÃO FINAL CORRIGIDA PARA FLASK CONTEXTO)
 
 from flask import Flask, redirect, url_for, current_app 
 from flask_sqlalchemy import SQLAlchemy
@@ -7,7 +7,7 @@ from flask_login import LoginManager
 from app.config.config import Config, NAMING_CONVENTION 
 
 # =================================================================
-# 1. INSTANCIAÇÕES GLOBAIS
+# 1. INSTANCIAÇÕES GLOBAIS (APENAS INSTÂNCIAS DE EXTENSÃO)
 # =================================================================
 
 db = SQLAlchemy()
@@ -20,18 +20,10 @@ login_manager.login_message = 'Por favor, faça login para acessar esta página.
 login_manager.login_message_category = 'warning'
 
 # =================================================================
-# 2. IMPORTAÇÃO DOS MODELOS (GLOBAL para Alembic)
+# 2. BLOCO DE IMPORTAÇÃO DE MODELOS REMOVIDO PARA EVITAR CYCLES
 # =================================================================
-# A importação é mantida aqui para que o Alembic os encontre.
-try:
-    # Estas importações devem ser mantidas
-    from app.models.user import User # Necessária para o load_user E para o CLI
-    from app.models.user import register_cli_commands # Importa a função CLI
-    from app.models.service import Service
-    from app.models.booking import Booking
-    from app.models.schedule import Schedule
-except ImportError as e:
-    print(f"AVISO CRÍTICO: Verifique o caminho dos seus modelos: {e}") 
+# Os modelos serão importados localmente ou no contexto da aplicação.
+
 
 # =================================================================
 # 3. FUNÇÃO CREATE_APP
@@ -42,31 +34,56 @@ def create_app(config_class=Config):
     
     app.config.from_object(config_class)
     
-    # Inicializa as extensões
+    # -------------------------------------------------------------
+    # 3.1. INICIALIZAÇÃO DE EXTENSÕES (db.init_app deve ser o primeiro)
+    # -------------------------------------------------------------
     db.init_app(app)
     db.metadata.naming_convention = NAMING_CONVENTION 
     migrate.init_app(app, db, render_as_batch=True)
     login_manager.init_app(app)
     
     # -------------------------------------------------------------
-    # REGISTRO DE COMANDOS CLI (NOVO)
+    # 3.2. CARREGAMENTO DE MODELOS E COMANDOS CLI (DENTRO DO CONTEXTO)
     # -------------------------------------------------------------
-    register_cli_commands(app) # <--- REGISTRA O COMANDO 'create-admin'
-    
+    with app.app_context():
+        # Importa todos os modelos. Isso é necessário para:
+        # 1. Garantir que o Flask-Migrate os encontre
+        # 2. Permitir que o user_loader e o CLI os usem.
+        try:
+            from app.models import user, service, booking, schedule
+            from app.models.user import User, register_cli_commands # Importa User e a função CLI
+        except ImportError as e:
+            # Em caso de erro, avisa e permite que o resto da aplicação tente rodar.
+            app.logger.error(f"Erro ao carregar modelos para Alembic/CLI: {e}")
+            
+        # REGISTRO DE COMANDOS CLI
+        # Verifica se a função CLI foi importada antes de tentar usá-la.
+        if 'register_cli_commands' in locals():
+            register_cli_commands(app)
+        else:
+            app.logger.warning("Comandos CLI não registrados. Verifique a importação do user.py.")
+
+
     # -------------------------------------------------------------
-    # CONFIGURAÇÃO DO FLASK-LOGIN (LOADER)
+    # 3.3. CONFIGURAÇÃO DO FLASK-LOGIN (LOADER)
     # -------------------------------------------------------------
     @login_manager.user_loader
     def load_user(user_id):
+        # O modelo User JÁ FOI importado no contexto acima. 
+        # Acesso direto deve funcionar agora, pois o DB já foi inicializado.
         try:
-            with current_app.app_context(): 
-                # Usa o modelo User importado globalmente
-                return User.query.get(int(user_id))
-        except RuntimeError:
-            return None 
+            # Não é necessário usar 'with current_app.app_context()' aqui, 
+            # pois o Flask-Login garante o contexto na chamada do load_user.
+            return User.query.get(int(user_id))
+        except NameError:
+             # Retorna None se User não foi definido (em caso de falha de importação grave)
+             return None 
+        except Exception:
+             return None
+
 
     # -------------------------------------------------------------
-    # REGISTRO DOS BLUEPRINTS
+    # 3.4. REGISTRO DOS BLUEPRINTS
     # -------------------------------------------------------------
     
     from app.blueprints.auth.routes import auth_bp
@@ -78,7 +95,7 @@ def create_app(config_class=Config):
     app.register_blueprint(admin_bp, url_prefix='/admin')
     
     # -------------------------------------------------------------
-    # ROTA RAIZ E OUTRAS UTILS
+    # 3.5. ROTA RAIZ E OUTRAS UTILS
     # -------------------------------------------------------------
     @app.route('/')
     def index_redirect():

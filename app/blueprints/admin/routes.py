@@ -61,13 +61,13 @@ def new_service():
             duracao = int(request.form.get('duracao')) 
         except ValueError:
             flash('Duração deve ser um número inteiro.', 'danger')
-            return redirect(url_for('admin_bp.new_service'))
+            return redirect(url_for('admin.new_service'))
 
         if nome and duracao:
             # Validação: Checar se o nome já existe (RNF05: Integridade de Dados)
             if Service.query.filter_by(nome=nome).first():
                 flash('Um serviço com este nome já existe.', 'warning')
-                return redirect(url_for('admin_bp.new_service'))
+                return redirect(url_for('admin.new_service'))
 
             new_service = Service(
                 nome=nome,
@@ -76,7 +76,7 @@ def new_service():
             )
             new_service.save()
             flash(f'Serviço "{nome}" criado com sucesso!', 'success')
-            return redirect(url_for('admin_bp.manage_services'))
+            return redirect(url_for('admin.manage_services'))
         
         flash('Nome e Duração são obrigatórios.', 'danger')
 
@@ -99,7 +99,7 @@ def edit_service(service_id):
             duracao = int(request.form.get('duracao'))
         except ValueError:
             flash('Duração deve ser um número inteiro.', 'danger')
-            return redirect(url_for('admin_bp.edit_service', service_id=service_id))
+            return redirect(url_for('admin.edit_service', service_id=service_id))
 
         if nome and duracao:
             # Validação de nome duplicado, exceto para o serviço atual
@@ -110,14 +110,14 @@ def edit_service(service_id):
             
             if existing_service:
                 flash('Outro serviço com este nome já existe.', 'warning')
-                return redirect(url_for('admin_bp.edit_service', service_id=service_id))
+                return redirect(url_for('admin.edit_service', service_id=service_id))
             
             service.nome = nome
             service.descricao = descricao
             service.duracao = duracao
             service.save()
             flash(f'Serviço "{nome}" atualizado com sucesso!', 'success')
-            return redirect(url_for('admin_bp.manage_services'))
+            return redirect(url_for('admin.manage_services'))
             
         flash('Nome e Duração são obrigatórios.', 'danger')
 
@@ -136,7 +136,7 @@ def delete_service(service_id):
     
     service.delete()
     flash(f'Serviço "{nome}" excluído permanentemente.', 'warning')
-    return redirect(url_for('admin_bp.manage_services'))
+    return redirect(url_for('admin.manage_services'))
 
 
 

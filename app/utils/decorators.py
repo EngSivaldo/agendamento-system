@@ -1,6 +1,7 @@
 # app/utils/decorators.py
+
 from functools import wraps
-from flask import abort, redirect, url_for, flash
+from flask import redirect, url_for, flash # Removi o 'abort' para usar flash/redirect
 from flask_login import current_user
 
 def role_required(role):
@@ -8,15 +9,22 @@ def role_required(role):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
+            # 1. Checa autenticação (Apesar de ser bom ter, é redundante se usar @login_required)
             if not current_user.is_authenticated:
-                return redirect(url_for('auth_bp.login'))
+                # CORREÇÃO DE NOMENCLATURA: Use 'auth.login'
+                return redirect(url_for('auth.login')) 
+                
+            # 2. Checa perfil
             if current_user.perfil != role:
                 flash("Acesso não autorizado. Seu perfil não permite esta ação.", 'danger')
-                return redirect(url_for('client_bp.index')) # Redireciona para home do cliente
+                # CORREÇÃO DE NOMENCLATURA: Use 'client.index'
+                return redirect(url_for('client.index'))
+            
             return f(*args, **kwargs)
         return decorated_function
     return decorator
 
+# A função 'admin_required' DEVE vir depois de 'role_required'
 def admin_required(f):
     """Alias para role_required('Administrador')"""
     return role_required('Administrador')(f)
