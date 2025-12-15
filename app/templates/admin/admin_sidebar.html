@@ -1,0 +1,53 @@
+{% set active_page = request.endpoint %}
+
+<div class="col-md-3">
+    <div class="card shadow-epic rounded-3 border-0 motion-card"> 
+        
+        <div class="card-header bg-dark-pro text-warning fw-bold border-bottom border-warning py-3">
+            <i class="fas fa-tools me-2 fa-lg"></i> Painel Administrativo
+        </div>
+        
+        <div class="list-group list-group-flush">
+            
+            <a href="{{ url_for('admin.dashboard') }}" 
+               class="list-group-item list-group-item-action py-3 hover-warning 
+               {% if active_page == 'admin.dashboard' %}active bg-warning text-dark fw-bold motion-card-active{% else %}bg-dark text-white-75{% endif %}"
+               {% if active_page == 'admin.dashboard' %}aria-current="true"{% endif %}>
+                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+            </a>
+            
+            {% set services_endpoints = ['admin.manage_services', 'admin.new_service', 'admin.edit_service'] %}
+            <a href="{{ url_for('admin.manage_services') }}" 
+               class="list-group-item list-group-item-action py-3 hover-warning
+               {% if active_page in services_endpoints %}active bg-warning text-dark fw-bold motion-card-active{% else %}bg-dark text-white-75{% endif %}">
+                <i class="fas fa-scissors me-2"></i> Gerenciar Serviços
+            </a>
+            
+            {% set schedules_endpoints = ['admin.manage_schedules', 'admin.new_schedule', 'admin.edit_schedule'] %}
+            <a href="{{ url_for('admin.manage_schedules') }}" 
+               class="list-group-item list-group-item-action py-3 hover-warning
+               {% if active_page in schedules_endpoints %}active bg-warning text-dark fw-bold motion-card-active{% else %}bg-dark text-white-75{% endif %}">
+                <i class="fas fa-clock me-2"></i> Gerenciar Horários
+            </a>
+            
+            {% set bookings_endpoints = ['admin.manage_bookings', 'admin.view_booking'] %}
+            <a href="{{ url_for('admin.manage_bookings') }}" 
+               class="list-group-item list-group-item-action py-3 hover-warning
+               {% if active_page in bookings_endpoints %}active bg-warning text-dark fw-bold motion-card-active{% else %}bg-dark text-white-75{% endif %}">
+                <i class="fas fa-calendar-check me-2"></i> Gerenciar Agendamentos (RF05)
+            </a>
+
+            {% set users_endpoints = ['admin.manage_users', 'admin.new_user', 'admin.edit_user'] %}
+            <a href="{{ url_for('admin.manage_users') }}" 
+               class="list-group-item list-group-item-action py-3 hover-warning
+               {% if active_page in users_endpoints %}active bg-warning text-dark fw-bold motion-card-active{% else %}bg-dark text-white-75{% endif %}">
+                <i class="fas fa-users me-2"></i> Gerenciar Usuários
+            </a>
+            
+            <a href="{{ url_for('auth.logout') }}" 
+               class="list-group-item list-group-item-action py-3 hover-warning bg-dark text-danger fw-bold border-top border-secondary mt-2">
+                <i class="fas fa-sign-out-alt me-2"></i> Sair
+            </a>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Serviços{% endblock %}
+
+{% block content %}
+<div class="row">
+    {% include "admin/admin_sidebar.html" %} 
+    
+    <div class="col-md-9">
+        
+        <h2 class="mb-5 text-warning fw-light border-bottom border-warning pb-2">
+            <i class="fas fa-scissors me-2"></i> Gerenciar Catálogo de Serviços
+        </h2>
+
+        <a href="{{ url_for('admin.new_service') }}" class="btn btn-warning fw-bold mb-4 shadow-sm">
+            <i class="fas fa-plus me-2"></i> Novo Serviço
+        </a>
+
+        <div class="card bg-dark shadow-epic p-0">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-dark table-striped table-hover mb-0">
+                        <thead class="text-warning border-warning border-bottom">
+                            <tr>
+                                <th>Nome</th>
+                                <th class="text-center">Duração (min)</th>
+                                <th>Descrição</th>
+                                <th class="text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for service in services %}
+                            <tr class="align-middle">
+                                <td class="fw-bold">{{ service.nome }}</td>
+                                <td class="text-center">{{ service.duracao }}</td>
+                                <td class="text-muted small">
+                                    {{ service.descricao if service.descricao and service.descricao|length < 50 else (service.descricao[:50] + '...' if service.descricao else 'N/A') }}
+                                </td>
+                                <td class="text-center">
+                                    
+                                    <a href="{{ url_for('admin.edit_service', service_id=service.id) }}" 
+                                       class="btn btn-sm btn-outline-info me-2" 
+                                       title="Editar Serviço">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    
+                                    <form action="{{ url_for('admin.delete_service', service_id=service.id) }}" 
+                                          method="POST" 
+                                          style="display:inline;" 
+                                          onsubmit="return confirm('ATENÇÃO! Tem certeza que deseja excluir o serviço {{ service.nome }}? Esta ação é irreversível e pode afetar agendamentos existentes.');">
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir Serviço">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">
+                                    <i class="fas fa-exclamation-triangle me-2"></i> Nenhum serviço cadastrado. Comece adicionando um novo serviço!
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

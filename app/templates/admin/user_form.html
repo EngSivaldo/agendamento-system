@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ 'Editar Usuário' if user else 'Novo Usuário' }} | Admin
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    {% include "admin/admin_sidebar.html" %}
+    
+    <div class="col-md-9">
+        
+        <h2 class="mb-5 text-warning fw-light border-bottom border-warning pb-2">
+            <i class="fas fa-user-edit me-2"></i> 
+            {{ 'Editar Usuário' if user else 'Cadastrar Novo Usuário' }}
+        </h2>
+        
+        <div class="card bg-dark shadow-epic border border-secondary">
+            <div class="card-body p-4 p-md-5">
+                
+                {% set form_action = url_for('admin.edit_user', user_id=user.id) if user else url_for('admin.new_user') %}
+                <form method="POST" action="{{ form_action }}">
+                    
+                    <div class="mb-4">
+                        <label for="nome" class="form-label text-white-50 fw-bold">
+                            <i class="fas fa-user me-2 text-warning"></i> Nome Completo:
+                        </label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary" id="nome" name="nome" value="{{ user.nome if user else '' }}" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="email" class="form-label text-white-50 fw-bold">
+                            <i class="fas fa-envelope me-2 text-warning"></i> Email:
+                        </label>
+                        <input type="email" class="form-control bg-dark text-white border-secondary" id="email" name="email" value="{{ user.email if user else '' }}" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="senha" class="form-label text-white-50 fw-bold">
+                            <i class="fas fa-lock me-2 text-warning"></i> Senha: 
+                            <span class="small text-muted">{% if user %}(Deixe em branco para não alterar){% endif %}</span>
+                        </label>
+                        <input type="password" class="form-control bg-dark text-white border-secondary" id="senha" name="senha" {% if not user %}required{% endif %}>
+                    </div>
+                    
+                    <div class="form-check form-switch mb-4">
+                        {% set is_admin_checked = 'checked' if user and user.is_admin else '' %}
+                        <input class="form-check-input bg-warning border-warning" type="checkbox" id="is_admin" name="is_admin" value="1" {{ is_admin_checked }}>
+                        <label class="form-check-label text-white-50 fw-bold" for="is_admin">
+                            <i class="fas fa-crown me-2 text-danger"></i> Conceder Permissão de Administrador
+                        </label>
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        {% set is_active_checked = 'checked' if not user or user.is_active else '' %}
+                        <input class="form-check-input bg-warning border-warning" type="checkbox" id="is_active" name="is_active" value="1" {{ is_active_checked }}>
+                        <label class="form-check-label text-white-50 fw-bold" for="is_active">
+                            <i class="fas fa-toggle-on me-2 text-success"></i> Usuário Ativo (Pode fazer login)
+                        </label>
+                    </div>
+                    
+                    <div class="mt-4 pt-3 border-top border-secondary">
+                        <button type="submit" class="btn btn-warning fw-bold me-3">
+                            <i class="fas fa-save me-2"></i> 
+                            {{ 'Salvar Alterações' if user else 'Cadastrar Usuário' }}
+                        </button>
+                        <a href="{{ url_for('admin.manage_users') }}" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i> Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+
+{% block title %}Gerenciar Agendamentos{% endblock %}
+
+{% block content %}
+<div class="row">
+    {% include "admin/admin_sidebar.html" %} 
+    
+    <div class="col-md-9">
+        
+        <h2 class="mb-5 text-warning fw-light border-bottom border-warning pb-2">
+            <i class="fas fa-calendar-alt me-2"></i> Gerenciar Agendamentos
+        </h2>
+
+        <p class="lead text-white-50 mb-4">Visualize, filtre e gerencie todos os agendamentos do sistema.</p>
+
+        {% if agendamentos %}
+            <div class="card bg-dark shadow-epic p-0">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped table-hover mb-0">
+                            <thead class="text-warning border-warning border-bottom">
+                                <tr>
+                                    <th>Serviço</th>
+                                    <th>Cliente</th>
+                                    <th>Data / Horário</th>
+                                    <th class="text-center">Status</th>
+                                    <th class="text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in agendamentos %}
+                                <tr class="align-middle">
+                                    
+                                    <td class="fw-bold">
+                                        {{ booking.servico.nome }}
+                                        <div class="small text-white-50 mt-1">
+                                            ({{ booking.servico.duracao }} min)
+                                        </div>
+                                    </td>
+                                    
+                                    <td>
+                                        {{ booking.user.nome }}
+                                        <div class="small text-info mt-1">
+                                            <i class="fas fa-envelope me-1"></i> {{ booking.user.email }}
+                                        </div>
+                                    </td>
+
+                                    <td>
+                                        <span class="fw-bold">{{ booking.data_agendamento.strftime('%d/%m/%Y') }}</span>
+                                        <div class="small text-white-50 mt-1">
+                                            {{ booking.schedule_slot.hora_inicio }} - {{ booking.schedule_slot.hora_fim }}
+                                        </div>
+                                    </td>
+                                    
+                                    {% set badge_class = 'bg-info' if booking.status == 'Pendente' else 'bg-success' if booking.status == 'Confirmado' else 'bg-danger' %}
+                                    <td class="text-center">
+                                        <span class="badge {{ badge_class }} fw-bold">{{ booking.status }}</span>
+                                    </td>
+                                    
+                                    <td class="text-center text-nowrap">
+                                        {% if booking.status == 'Pendente' %}
+                                            <form action="{{ url_for('admin.confirm_booking', booking_id=booking.id) }}" 
+                                                method="POST" 
+                                                style="display:inline;" 
+                                                onsubmit="return confirm('Confirmar agendamento para {{ booking.user.nome }} em {{ booking.data_agendamento.strftime('%d/%m/%Y') }}?');">
+                                                <button type="submit" class="btn btn-sm btn-success me-2" title="Confirmar">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                            
+                                            <form action="{{ url_for('admin.cancel_booking', booking_id=booking.id) }}" 
+                                                method="POST" 
+                                                style="display:inline;" 
+                                                onsubmit="return confirm('Tem certeza que deseja CANCELAR o agendamento?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancelar">
+                                                    <i class="fas fa-times-circle"></i>
+                                                </button>
+                                            </form>
+                                        {% elif booking.status == 'Confirmado' %}
+                                            <form action="{{ url_for('admin.cancel_booking', booking_id=booking.id) }}" 
+                                                method="POST" 
+                                                style="display:inline;">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancelar">
+                                                    <i class="fas fa-times-circle me-1"></i> Cancelar
+                                                </button>
+                                            </form>
+                                        {% else %}
+                                            <span class="text-muted small">Nenhuma ação disponível</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        {% else %}
+            <div class="alert alert-dark text-info border-info shadow-epic text-center p-4" role="alert">
+                <h4 class="alert-heading"><i class="fas fa-calendar-minus me-2"></i> Sem Agendamentos</h4>
+                <p>Nenhum agendamento foi encontrado no sistema.</p>
+            </div>
+        {% endif %}
+        
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Cadastro | AgendaPRO{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center pt-5">
+    
+    <div class="col-lg-5 col-md-8">
+        
+        <div class="card bg-dark shadow-epic border border-warning motion-card">
+            
+            <div class="card-header bg-dark-pro border-bottom border-warning text-center py-3">
+                <h3 class="mb-0 text-warning fw-bold">
+                    <i class="fas fa-user-plus me-2"></i> CRIAÇÃO DE CONTA RÁPIDA
+                </h3>
+            </div>
+            
+            <div class="card-body p-4 p-md-5">
+                <h4 class="mb-4 text-white fw-light">Criar Sua Conta</h4>
+                
+                <form method="POST">
+                    
+                    <div class="mb-3">
+                        <label for="nome" class="form-label text-white-50 fw-bold">
+                            <i class="fas fa-user me-2 text-warning"></i> Nome Completo
+                        </label>
+                        <input type="text" class="form-control bg-dark text-white border-secondary" id="nome" name="nome" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label text-white-50 fw-bold">
+                            <i class="fas fa-envelope me-2 text-warning"></i> Email
+                        </label>
+                        <input type="email" class="form-control bg-dark text-white border-secondary" id="email" name="email" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="senha" class="form-label text-white-50 fw-bold">
+                            <i class="fas fa-lock me-2 text-warning"></i> Senha
+                        </label>
+                        <input type="password" class="form-control bg-dark text-white border-secondary" id="senha" name="senha" required>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label for="confirm_senha" class="form-label text-white-50 fw-bold">
+                            <i class="fas fa-key me-2 text-warning"></i> Confirmar Senha
+                        </label>
+                        <input type="password" class="form-control bg-dark text-white border-secondary" id="confirm_senha" name="confirm_senha" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-warning fw-bold w-100 mt-3 py-2">
+                        <i class="fas fa-user-plus me-2"></i> Cadastrar
+                    </button>
+                    
+                </form>
+                
+                <p class="mt-4 text-center text-white-50">
+                    Já tem uma conta? 
+                    <a href="{{ url_for('auth.login') }}" class="text-info text-decoration-none fw-bold hover-warning">
+                        Fazer Login
+                    </a>
+                </p>
+                
+            </div>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}
