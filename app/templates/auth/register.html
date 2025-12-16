@@ -3,67 +3,110 @@
 {% block title %}Cadastro | AgendaPRO{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center pt-5">
-    
+<div class="row justify-content-center align-items-center pt-5">
+
     <div class="col-lg-5 col-md-8">
-        
-        <div class="card bg-dark shadow-epic border border-warning motion-card">
-            
-            <div class="card-header bg-dark-pro border-bottom border-warning text-center py-3">
-                <h3 class="mb-0 text-warning fw-bold">
-                    <i class="fas fa-user-plus me-2"></i> CRIAÇÃO DE CONTA RÁPIDA
+
+        <!-- CARD CADASTRO -->
+        <div class="card motion-card shadow-epic border border-warning">
+
+            <!-- HEADER -->
+            <div class="card-header bg-dark-pro border-bottom border-warning text-center py-4">
+                <h3 class="mb-0 fw-bold text-warning">
+                    <i class="fas fa-user-plus me-2"></i>
+                    Criar Conta
                 </h3>
+                <small class="text-pro-muted">
+                    Cadastro rápido e seguro
+                </small>
             </div>
-            
+
+            <!-- BODY -->
             <div class="card-body p-4 p-md-5">
-                <h4 class="mb-4 text-white fw-light">Criar Sua Conta</h4>
-                
-                <form method="POST">
-                    
+
+                <h4 class="mb-4 fw-light text-pro text-center">
+                    Junte-se ao AgendaPRO
+                </h4>
+
+                <form method="POST" novalidate>
+
+                    <!-- NOME -->
                     <div class="mb-3">
-                        <label for="nome" class="form-label text-white-50 fw-bold">
-                            <i class="fas fa-user me-2 text-warning"></i> Nome Completo
+                        <label for="nome" class="form-label fw-bold text-pro-muted">
+                            <i class="fas fa-user me-2 text-warning"></i>
+                            Nome Completo
                         </label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary" id="nome" name="nome" required>
+                        <input type="text"
+                               class="form-control"
+                               id="nome"
+                               name="nome"
+                               placeholder="Seu nome completo"
+                               required>
                     </div>
-                    
+
+                    <!-- EMAIL -->
                     <div class="mb-3">
-                        <label for="email" class="form-label text-white-50 fw-bold">
-                            <i class="fas fa-envelope me-2 text-warning"></i> Email
+                        <label for="email" class="form-label fw-bold text-pro-muted">
+                            <i class="fas fa-envelope me-2 text-warning"></i>
+                            Email
                         </label>
-                        <input type="email" class="form-control bg-dark text-white border-secondary" id="email" name="email" required>
+                        <input type="email"
+                               class="form-control"
+                               id="email"
+                               name="email"
+                               placeholder="seu@email.com"
+                               required>
                     </div>
-                    
+
+                    <!-- SENHA -->
                     <div class="mb-3">
-                        <label for="senha" class="form-label text-white-50 fw-bold">
-                            <i class="fas fa-lock me-2 text-warning"></i> Senha
+                        <label for="senha" class="form-label fw-bold text-pro-muted">
+                            <i class="fas fa-lock me-2 text-warning"></i>
+                            Senha
                         </label>
-                        <input type="password" class="form-control bg-dark text-white border-secondary" id="senha" name="senha" required>
+                        <input type="password"
+                               class="form-control"
+                               id="senha"
+                               name="senha"
+                               placeholder="Crie uma senha segura"
+                               required>
                     </div>
-                    
+
+                    <!-- CONFIRMAR SENHA -->
                     <div class="mb-4">
-                        <label for="confirm_senha" class="form-label text-white-50 fw-bold">
-                            <i class="fas fa-key me-2 text-warning"></i> Confirmar Senha
+                        <label for="confirm_senha" class="form-label fw-bold text-pro-muted">
+                            <i class="fas fa-key me-2 text-warning"></i>
+                            Confirmar Senha
                         </label>
-                        <input type="password" class="form-control bg-dark text-white border-secondary" id="confirm_senha" name="confirm_senha" required>
+                        <input type="password"
+                               class="form-control"
+                               id="confirm_senha"
+                               name="confirm_senha"
+                               placeholder="Repita a senha"
+                               required>
                     </div>
-                    
-                    <button type="submit" class="btn btn-warning fw-bold w-100 mt-3 py-2">
-                        <i class="fas fa-user-plus me-2"></i> Cadastrar
+
+                    <!-- BOTÃO -->
+                    <button type="submit"
+                            class="btn btn-warning fw-bold w-100 py-2 mt-2">
+                        <i class="fas fa-user-plus me-2"></i>
+                        Criar Conta
                     </button>
-                    
+
                 </form>
-                
-                <p class="mt-4 text-center text-white-50">
-                    Já tem uma conta? 
-                    <a href="{{ url_for('auth.login') }}" class="text-info text-decoration-none fw-bold hover-warning">
-                        Fazer Login
+
+                <!-- LINK LOGIN -->
+                <p class="mt-4 text-center text-pro-muted">
+                    Já tem uma conta?
+                    <a href="{{ url_for('auth.login') }}"
+                       class="text-warning fw-bold text-decoration-none hover-warning">
+                        Fazer login
                     </a>
                 </p>
-                
+
             </div>
         </div>
-        
+
     </div>
 </div>
 {% endblock %}

@@ -9,6 +9,10 @@ from app.models.booking import Booking
 from app.models.schedule import Schedule 
 from flask_login import login_required # Importa o decorator padrão do Flask-Login
 from app.utils.decorators import admin_required # Importa apenas o seu decorator customizado
+from datetime import datetime
+from app import db
+
+
 
 # -------------------------------------------------------------
 # DEFINIÇÃO DO BLUEPRINT (ESTE BLOCO É CRUCIAL E DEVE VIR PRIMEIRO)
@@ -186,7 +190,7 @@ def new_schedule():
 
         if existing_schedule:
             flash(f'Conflito de horário! Já existe um bloco cadastrado para {dias_semana_map.get(dia_semana)} que se sobrepõe.', 'danger')
-            return redirect(url_for('admin_bp.new_schedule'))
+            return redirect(url_for('admin.new_schedule'))
 
         new_schedule = Schedule(
             dia_semana=dia_semana,
@@ -195,7 +199,8 @@ def new_schedule():
         )
         new_schedule.save()
         flash(f'Horário de {hora_inicio} às {hora_fim} em {dias_semana_map.get(dia_semana)} criado com sucesso!', 'success')
-        return redirect(url_for('admin_bp.manage_schedules'))
+        return redirect(url_for('admin.manage_schedules'))
+
 
     # Para GET
     return render_template('admin/schedule_form.html', 
@@ -203,18 +208,6 @@ def new_schedule():
                            dias_semana_map=dias_semana_map)
 
 
-@admin_bp.route('/schedules/delete/<int:schedule_id>', methods=['POST'])
-@admin_required
-def delete_schedule(schedule_id):
-    """RF04 - Exclui um bloco de horário."""
-    schedule = Schedule.query.get_or_404(schedule_id)
-    
-    # RNF05 - Integridade: Verificar se há agendamentos vinculados a este horário
-    # Se houver, a exclusão seria bloqueada ou os agendamentos teriam que ser cancelados
-    
-    schedule.delete()
-    flash('Bloco de horário excluído permanentemente.', 'warning')
-    return redirect(url_for('admin_bp.manage_schedules'))
 
 
 # app/blueprints/admin/routes.py
@@ -451,3 +444,30 @@ def edit_schedule(schedule_id):
     return render_template('admin/schedule_form.html', 
                            schedule=schedule, # Passa o objeto schedule para preencher o form
                            dias_semana_map=dias_semana_map)
+    
+    
+@admin_bp.route('/schedules/delete/<int:schedule_id>', methods=['POST'])
+@login_required
+def delete_schedule(schedule_id):
+    schedule = Schedule.query.get_or_404(schedule_id)
+
+    # Checa se há agendamentos futuros associados
+    futuros = Booking.query.filter(
+        Booking.schedule_id == schedule.id,
+        Booking.status.in_(['Pendente', 'Confirmado']),
+        Booking.data_agendamento > datetime.now()
+    ).count()
+
+    if futuros > 0:
+        flash('⚠️ Não é possível excluir este bloco de horário. Existem agendamentos futuros associados.', 'warning')
+        return redirect(url_for('admin.manage_schedules'))
+
+    try:
+        db.session.delete(schedule)
+        db.session.commit()
+        flash('✅ Bloco de horário excluído com sucesso.', 'success')
+    except Exception:
+        db.session.rollback()
+        flash('❌ Não foi possível excluir este bloco de horário devido a restrições no banco de dados.', 'danger')
+
+    return redirect(url_for('admin.manage_schedules'))

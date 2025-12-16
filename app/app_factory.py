@@ -21,16 +21,16 @@ def create_app(config_class=DevelopmentConfig):
 
     # 3. Configuração do Flask-Login e Comandos CLI (Dentro do Contexto)
     with app.app_context():
-        # Importe o User Model DENTRO do contexto da aplicação
         from app.models.user import User, register_cli_commands
+        from app.extensions.database import db
 
-        # Configuração do Flask-Login user_loader
+        # 🔐 Loader correto e compatível com SQLAlchemy 2.x
         @login_manager.user_loader
         def load_user(user_id):
-            return User.query.get(int(user_id))
+            return db.session.get(User, int(user_id))
 
-        # Registro dos comandos CLI (como 'create-admin')
         register_cli_commands(app)
+
 
     # 🌟 4. INJEÇÃO DE CONTEXTO GLOBAL (Para o Rodapé) 🌟
     # Adiciona a função 'now()' ao contexto do Jinja para usar em templates (ex: rodapé)

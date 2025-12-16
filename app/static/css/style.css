@@ -1,149 +1,162 @@
 /*
 |--------------------------------------------------------------------------
-| AGENDA PRO - ESTILOS CUSTOMIZADOS (PROFISSIONAL/ÉPICO)
+| AGENDA PRO - ESTILOS CUSTOMIZADOS (PROFISSIONAL / CORRIGIDO)
 |--------------------------------------------------------------------------
-| Este arquivo define o tema principal (Dark Mode) e as classes para
-| o Motion Card, além de gerenciar a transição para o Light Mode.
+| Tema Dark / Light com contraste garantido e cores semânticas.
 */
 
-/* -------------------------------------------------------------
- * 1. CLASSES DE LAYOUT E COR (Neo-Brutalismo Suave - DARK MODE PADRÃO)
- * ------------------------------------------------------------- */
+/* =========================================================
+ * 1. VARIÁVEIS SEMÂNTICAS DE TEXTO (BASE DO SISTEMA)
+ * ========================================================= */
 
-/* Fundo da Aplicação (Cor de fundo principal - Cinza Escuro Quase Preto) */
+/* DARK MODE (padrão) */
+[data-bs-theme="dark"] {
+  --text-primary-pro: #f8f9fa;
+  --text-secondary-pro: #adb5bd;
+  --bg-main-pro: #121212;
+  --bg-surface-pro: #1a1a1a;
+}
+
+/* LIGHT MODE */
+[data-bs-theme="light"] {
+  --text-primary-pro: #212529;
+  --text-secondary-pro: #495057;
+  --bg-main-pro: #f8f9fa;
+  --bg-surface-pro: #e9ecef;
+}
+
+/* =========================================================
+ * 2. FUNDO E LAYOUT
+ * ========================================================= */
+
 .bg-dark-pro {
-  background-color: #121212 !important;
-  transition: background-color 0.5s ease, color 0.5s ease; /* Transição para mudança de tema */
+  background-color: var(--bg-main-pro) !important;
+  color: var(--text-primary-pro);
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* Navbar e Cartões (Tom um pouco mais claro que o fundo) */
 .bg-dark {
-  background-color: #1a1a1a !important;
-  transition: background-color 0.5s ease;
+  background-color: var(--bg-surface-pro) !important;
+  color: var(--text-primary-pro);
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* Espaçamento Vertical Extra Grande (para o <main> content) */
 .py-6 {
   padding-top: 5rem !important;
   padding-bottom: 5rem !important;
 }
 
-/* Sombra Épica (Suave, mas perceptível no fundo escuro, com toque de cor) */
-.shadow-epic {
-  box-shadow: 0 5px 15px rgba(255, 193, 7, 0.2), 0 0 10px rgba(0, 0, 0, 0.5) !important;
+/* =========================================================
+ * 3. TEXTO (VISIBILIDADE GARANTIDA)
+ * ========================================================= */
+
+.text-pro {
+  color: var(--text-primary-pro) !important;
 }
 
-/* Efeito Hover nas Rotas de Navegação */
+.text-pro-muted {
+  color: var(--text-secondary-pro) !important;
+}
+
+/* Patch global para textos herdados do Bootstrap */
+[data-bs-theme="light"] .text-light,
+[data-bs-theme="light"] .text-white,
+[data-bs-theme="light"] .text-white-50 {
+  color: var(--text-primary-pro) !important;
+}
+
+/* =========================================================
+ * 4. NAVBAR
+ * ========================================================= */
+
+.navbar {
+  color: var(--text-primary-pro);
+}
+
+.navbar-brand,
+.navbar-nav .nav-link {
+  color: var(--text-primary-pro) !important;
+}
+
 .hover-warning:hover {
   color: var(--bs-warning) !important;
-  text-shadow: 0 0 8px rgba(255, 193, 7, 0.7); /* Brilho suave */
+  text-shadow: 0 0 8px rgba(255, 193, 7, 0.7);
   transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
-/* -------------------------------------------------------------
-* 2. QUADROS EM MOVIMENTO (MOTION CARDS)
-* ------------------------------------------------------------- */
+/* =========================================================
+ * 5. MOTION CARDS
+ * ========================================================= */
+
 .motion-card {
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  will-change: transform, box-shadow; /* Otimização de performance */
-  border: none !important; /* Remoção de bordas nativas do Bootstrap para um visual mais limpo */
-  border-radius: 0.75rem !important; /* Arredondamento suave */
+  border: none !important;
+  border-radius: 0.75rem !important;
+  background-color: var(--bg-surface-pro);
+  color: var(--text-primary-pro);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform, box-shadow;
 }
 
 .motion-card:hover {
-  /* Efeito de elevação 3D */
   transform: translateY(-5px) scale(1.02);
-
-  /* Sombra de destaque no hover */
-  box-shadow: 0 10px 20px rgba(255, 193, 7, 0.4), 0 5px 10px rgba(0, 0, 0, 0.5) !important;
+  box-shadow: 0 10px 20px rgba(255, 193, 7, 0.4), 0 5px 10px rgba(0, 0, 0, 0.4) !important;
   cursor: pointer;
 }
 
-/* -------------------------------------------------------------
-* 3. MELHORIA NO MODO CLARO (LIGHT MODE)
-* ------------------------------------------------------------- */
+/* =========================================================
+ * 6. DROPDOWNS, CARDS E LISTAS
+ * ========================================================= */
 
-[data-bs-theme="light"] {
-  /* Variáveis base ajustadas para o Light Mode */
-  --bs-body-bg: #f8f9fa;
-  --bs-body-color: #212529;
+.card,
+.list-group-item,
+.dropdown-menu {
+  background-color: var(--bg-surface-pro) !important;
+  color: var(--text-primary-pro) !important;
 }
 
-[data-bs-theme="light"] .bg-dark-pro {
-  background-color: #f8f9fa !important; /* Fundo principal claro (cinza muito claro) */
-  color: #212529 !important; /* Texto escuro */
+.dropdown-item {
+  color: var(--text-primary-pro) !important;
 }
 
-[data-bs-theme="light"] .bg-dark {
-  background-color: #e9ecef !important; /* Navegação e cabeçalhos de card claros */
-}
-
-[data-bs-theme="light"] .text-light {
-  color: #212529 !important; /* Todo texto que usa text-light vira escuro */
-}
-
-/* Correção Crítica para o Título e Navbar Brand (AgendaPRO) */
-[data-bs-theme="light"] .navbar-brand .text-white {
+.dropdown-item:hover {
+  background-color: var(--bs-warning);
   color: #212529 !important;
 }
 
-/* Correção para os links de navegação gerais */
-[data-bs-theme="light"] .navbar-nav .nav-link.text-white-50 {
-  color: #495057 !important; /* Cinza escuro suave */
-}
+/* =========================================================
+ * 7. ALERTAS
+ * ========================================================= */
 
-/* Ajuste da Navbar para usar o esquema de cores light do Bootstrap */
-[data-bs-theme="light"] .navbar-dark {
-  --bs-navbar-color: rgba(0, 0, 0, 0.7);
-  --bs-navbar-hover-color: #ffc107;
-  filter: none; /* Garante que o ícone do toggler apareça */
-}
-
-/* Ajuste para botões e dropdowns no modo claro */
-[data-bs-theme="light"] .dropdown-menu-dark,
-[data-bs-theme="light"] .card.bg-dark {
-  background-color: #ffffff !important;
-  color: #212529 !important;
-  border: 1px solid #dee2e6;
-}
-
-/* Garante que o texto do dropdown permaneça visível no modo claro */
-[data-bs-theme="light"] .dropdown-menu-dark .dropdown-item {
-  color: #212529 !important;
-}
-[data-bs-theme="light"] .dropdown-menu-dark .dropdown-item:hover {
-  background-color: #ffc107;
-  color: #212529 !important;
-}
-
-/* -------------------------------------------------------------
-* 4. CORREÇÃO DE ALERTA PARA DARK MODE
-* ------------------------------------------------------------- */
 .alert-dark {
-  background-color: #212529; /* Fundo escuro para alertas */
-  color: #f8f9fa; /* Texto claro */
+  background-color: #212529;
+  color: #f8f9fa;
 }
 
-/* Personalização do botão fechar no modo escuro */
 .alert .btn-close {
-  filter: invert(1); /* Inverte a cor para aparecer no fundo escuro */
+  filter: invert(1);
 }
 
-/* Correção para garantir que o item ativo na barra lateral mantenha o destaque */
-.list-group-item.active.bg-warning {
-  background-color: var(--bs-warning) !important;
-  border-color: var(--bs-warning) !important;
-  color: var(--bs-dark) !important; /* Garante texto escuro no fundo amarelo */
-}
+/* =========================================================
+ * 8. LIST GROUP / SIDEBAR
+ * ========================================================= */
 
-/* Transição para os itens da lista para um toque suave */
 .list-group-item {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+.list-group-item.active.bg-warning {
+  background-color: var(--bs-warning) !important;
+  border-color: var(--bs-warning) !important;
+  color: #212529 !important;
+}
+
+/* =========================================================
+ * 9. BOTÕES DE SLOT
+ * ========================================================= */
+
 .btn-slot.btn-unavailable {
-  background-color: #444; /* Cor mais escura */
-  color: #888; /* Texto cinza */
+  background-color: #444;
+  color: #999;
   cursor: not-allowed;
-  border: 1px solid red;
+  border: 1px solid #dc3545;
 }

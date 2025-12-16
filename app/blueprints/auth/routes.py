@@ -3,6 +3,9 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_user, logout_user, login_required, current_user 
 from app.models.user import User
+from flask import current_app
+from app import db
+
 from app import db # Objeto DB para operações de sessão (necessário para o .save() customizado)
 
 # -------------------------------------------------------------
@@ -17,45 +20,38 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     """RF01 - Rota de Login."""
-    
-    # 1. Se o usuário já estiver autenticado
+
     if current_user.is_authenticated:
         if current_user.perfil == 'Administrador':
             return redirect(url_for('admin.dashboard'))
-        
-        # Redireciona para a rota raiz que deve tratar o cliente logado
-        return redirect(url_for('client.index')) # Usando 'client.index' como rota inicial do cliente
+        return redirect(url_for('client.index'))
 
     if request.method == 'POST':
         email = request.form.get('email')
         senha = request.form.get('senha')
-        
-        # 2. Busca e contexto de DB
+
         try:
-            # Envolve a consulta em no_autoflush para evitar problemas de contexto
-            with db.session.no_autoflush: 
-                user = User.query.filter_by(email=email).first()
-        except Exception:
+            # ✅ CONSULTA SIMPLES, SEM no_autoflush
+            user = db.session.query(User).filter_by(email=email).first()
+        except Exception as e:
+            current_app.logger.error(f"Erro no login: {e}")
             flash('Erro interno ao acessar o banco de dados. Tente novamente.', 'danger')
             return render_template('auth/login.html')
 
-        # 3. Validação e Login
         if user and user.check_password(senha):
             login_user(user)
             flash(f'Bem-vindo(a), {user.nome}!', 'success')
-            
-            # Redirecionamento após login (RF02)
+
             if user.perfil == 'Administrador':
                 return redirect(url_for('admin.dashboard'))
-            
-            # Redirecionamento para a página 'next' (se houver) ou para o cliente
-            next_page = request.args.get('next')
-            return redirect(next_page or url_for('client.index')) 
-        else:
-            flash('Email ou senha inválidos.', 'danger')
 
-    # 4. Para GET (exibir formulário)
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('client.index'))
+
+        flash('Email ou senha inválidos.', 'danger')
+
     return render_template('auth/login.html')
+
 
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -114,3 +110,5 @@ def logout():
     flash('Você foi desconectado(a).', 'info')
     # Redireciona para o login após o logout
     return redirect(url_for('auth.login'))
+
+

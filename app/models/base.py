@@ -1,34 +1,63 @@
-# app/models/base.py (SOLUÇÃO CORRIGIDA PARA ACESSO À INSTÂNCIA GLOBAL)
-
 from flask import current_app
-# Removida a importação de flask_sqlalchemy, que causou o erro.
+from datetime import datetime
 
 class BaseMixin:
-    """Mixin com métodos comuns de persistência."""
-    
+    """Mixin com métodos comuns de persistência e soft delete."""
+
+    # 🔥 COLUNAS PADRÃO
+    created_at = None
+    updated_at = None
+    deleted_at = None
+
     def _get_db_session(self):
         """
-        Retorna a sessão do banco de dados (db.session) 
-        importando a instância 'db' de forma segura.
+        Retorna a sessão do banco de dados (db.session)
+        usando a instância global registrada no app.
         """
-        # A importação LOCAL é segura agora que __init__.py foi corrigido.
-        # Isso garante que a instância 'db' seja a ÚNICA já registrada.
-        from app import db # Importa a instância 'db' que foi definida globalmente em app/__init__.py
+        from app import db
         return db
 
     def save(self):
-        """Salva a instância no banco de dados."""
+        """Salva ou atualiza a instância no banco."""
         db_instance = self._get_db_session()
         try:
+            if hasattr(self, 'updated_at'):
+                self.updated_at = datetime.utcnow()
+
             db_instance.session.add(self)
             db_instance.session.commit()
         except Exception as e:
             db_instance.session.rollback()
             current_app.logger.error(f"Erro ao salvar objeto: {e}")
-            raise e
+            raise
+
+    def soft_delete(self):
+        """Soft delete (não remove fisicamente)."""
+        db_instance = self._get_db_session()
+        try:
+            self.deleted_at = datetime.utcnow()
+            db_instance.session.commit()
+        except Exception as e:
+            db_instance.session.rollback()
+            current_app.logger.error(f"Erro ao soft delete: {e}")
+            raise
+
+    def restore(self):
+        """Restaura um registro deletado."""
+        db_instance = self._get_db_session()
+        try:
+            self.deleted_at = None
+            db_instance.session.commit()
+        except Exception as e:
+            db_instance.session.rollback()
+            current_app.logger.error(f"Erro ao restaurar objeto: {e}")
+            raise
 
     def delete(self):
-        """Remove a instância do banco de dados."""
+        """
+        DELETE DEFINITIVO (USAR SOMENTE ADMIN)
+        Mantido para compatibilidade.
+        """
         db_instance = self._get_db_session()
         try:
             db_instance.session.delete(self)
@@ -36,4 +65,4 @@ class BaseMixin:
         except Exception as e:
             db_instance.session.rollback()
             current_app.logger.error(f"Erro ao deletar objeto: {e}")
-            raise e
+            raise

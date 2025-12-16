@@ -31,39 +31,53 @@
                         <tbody>
                             {% for schedule in schedules %}
                             <tr class="align-middle">
-                                <td class="fw-bold">{{ dias_semana_map[schedule.dia_semana] }}</td>
-                                <td class="text-center">{{ schedule.hora_inicio }}</td>
-                                <td class="text-center">{{ schedule.hora_fim }}</td>
+                                <td class="fw-bold">
+                                    {{ dias_semana_map[schedule.dia_semana] }}
+                                </td>
+                        
                                 <td class="text-center">
-                                    
-                                    {% for schedule in schedules %}
-                                    <tr>
-                                        <td>{{ schedule.dia_semana_nome }}</td>
-                                        <td>{{ schedule.hora_inicio }}</td>
-                                        <td>
-                                            <a href="{{ url_for('admin.edit_schedule', schedule_id=schedule.id) }}" class="btn btn-sm btn-info">Editar</a>
-                                            </td>
-                                    </tr>
-                                    {% endfor %}
-                                    
-                                    <form action="{{ url_for('admin.delete_schedule', schedule_id=schedule.id) }}" 
-                                          method="POST" 
-                                          style="display:inline;" 
-                                          onsubmit="return confirm('ATENÇÃO! Tem certeza que deseja excluir este bloco de horário? Todos os agendamentos futuros para este período serão afetados.');">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir Horário">
+                                    {{ schedule.hora_inicio }}
+                                </td>
+                        
+                                <td class="text-center">
+                                    {{ schedule.hora_fim }}
+                                </td>
+                        
+                                <td class="text-center">
+                        
+                                    <a href="{{ url_for('admin.edit_schedule', schedule_id=schedule.id) }}"
+                                       class="btn btn-sm btn-info me-1"
+                                       title="Editar Horário">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                        
+                                    <form action="{{ url_for('admin.delete_schedule', schedule_id=schedule.id) }}"
+                                          method="POST"
+                                          style="display:inline;"
+                                          onsubmit="return confirm(
+                                            'ATENÇÃO!\n\nTem certeza que deseja excluir este bloco de horário?\nTodos os agendamentos futuros podem ser afetados.'
+                                          );">
+                        
+                                        <button type="submit"
+                                                class="btn btn-sm btn-outline-danger"
+                                                title="Excluir Horário">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
+                        
                                     </form>
+                        
                                 </td>
                             </tr>
                             {% else %}
                             <tr>
                                 <td colspan="4" class="text-center py-4 text-muted">
-                                    <i class="fas fa-exclamation-triangle me-2"></i> Nenhum bloco de horário cadastrado. Comece adicionando um novo!
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Nenhum bloco de horário cadastrado.
                                 </td>
                             </tr>
                             {% endfor %}
                         </tbody>
+                        
                     </table>
                 </div>
             </div>

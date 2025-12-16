@@ -3,199 +3,220 @@
 {% block title %}Agendar Serviço | AgendaPRO{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    
-    <header class="mb-5">
-        <h1 class="text-warning fw-light border-bottom border-warning pb-2">
-            <i class="fas fa-calendar-alt me-3"></i> Confirmação e Agendamento
-        </h1>
-        <p class="lead text-white-50">Siga os passos abaixo para escolher o melhor dia e horário para seu serviço.</p>
-    </header>
 
-    <div class="card bg-dark shadow-epic border border-secondary motion-card-subtle">
-        <div class="card-body p-4 p-md-5">
-            
-            <h3 class="text-white mb-4">Serviço Selecionado: 
-                <span class="text-info fw-bold">{{ service.nome if service else 'Carregando...' }}</span>
-            </h3>
+<!-- HEADER -->
+<header class="mb-5">
+    <h1 class="fw-light text-warning border-bottom border-warning pb-2">
+        <i class="fas fa-calendar-alt me-3"></i>
+        Confirmação e Agendamento
+    </h1>
+    <p class="lead text-pro-muted">
+        Escolha a data e o melhor horário para realizar seu serviço.
+    </p>
+</header>
 
-            <div class="row">
-                <div class="col-lg-4 mb-4">
-                    <div id="service-details" 
-                         data-service-id="{{ service.id }}"
-                         class="p-3 bg-dark-pro rounded border border-secondary h-100">
-                        
-                        <h5 class="text-warning mb-3"><i class="fas fa-info-circle me-2"></i> Detalhes</h5>
-                        <ul class="list-unstyled text-white-50 small">
-                            <li><i class="fas fa-clock me-2 text-warning"></i> Duração: {{ service.duracao if service else 'N/A' }} minutos</li>
-                            <li class="mt-2 text-white"><i class="fas fa-hand-scissors me-2 text-warning"></i> Descrição: 
-                                <span class="d-block small mt-1">{{ service.descricao if service else 'Detalhes indisponíveis.' }}</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
+<div class="card shadow-epic motion-card border border-secondary">
+    <div class="card-body p-4 p-md-5">
 
-                <div class="col-lg-8">
-                    <h5 class="text-white mb-4"><i class="fas fa-tasks me-2 text-info"></i> Processo de Reserva:</h5>
-                    
-                    <div class="progress mb-4" style="height: 10px;">
-                        <div class="progress-bar bg-warning" role="progressbar" style="width: 33%" aria-valuenow="33" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
+        <!-- SERVIÇO -->
+        <h3 class="mb-4 text-pro">
+            Serviço Selecionado:
+            <span class="text-info fw-bold">
+                {{ service.nome if service else 'Carregando...' }}
+            </span>
+        </h3>
 
-                    <div id="booking-steps">
-                        
-                        <form method="POST" action="{{ url_for('client.finalize_booking') }}" id="booking-form"> 
-                            <input type="hidden" name="service_id" value="{{ service.id }}">
-                            
-                            <input type="hidden" name="datetime_slot" id="datetime_slot" required>
+        <div class="row g-4">
 
-                            <h4 class="text-white"><i class="fas fa-calendar-day me-2 text-warning"></i> 1. Escolha a Data</h4>
-                            
-                            <div class="mb-3">
-                                <label for="data_agendamento" class="form-label text-white-50">Data Desejada:</label>
-                                <input type="date" class="form-control bg-dark text-white border-secondary" id="data_agendamento" name="data_agendamento" required>
-                            </div>
-                            
-                            <h4 class="text-white mt-5"><i class="fas fa-clock me-2 text-warning"></i> 2. Horários Disponíveis</h4>
-                            <p class="text-white-50">Clique em um horário para selecioná-lo e prosseguir. Horários marcados com **(X)** estão indisponíveis.</p>
+            <!-- DETALHES -->
+            <div class="col-lg-4">
+                <div id="service-details"
+                     data-service-id="{{ service.id }}"
+                     class="bg-dark-pro rounded border border-secondary p-3 h-100">
 
-                            <div id="available-slots-container" class="p-3 bg-dark-pro rounded border border-secondary text-center text-muted">
-                                * Por favor, selecione uma data para ver os horários. *
-                            </div>
-                            
-                            <div class="mt-5 border-top border-secondary pt-4">
-                                <button type="submit" class="btn btn-success fw-bold me-3" id="finalize-button" disabled>
-                                    <i class="fas fa-check-circle me-2"></i> Finalizar Agendamento
-                                </button>
-                                <a href="{{ url_for('client.index') }}" class="btn btn-secondary">
-                                    <i class="fas fa-times me-2"></i> Voltar aos Serviços
-                                </a>
-                            </div>
-                        </form>
-                    </div>
+                    <h5 class="text-warning mb-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Detalhes do Serviço
+                    </h5>
+
+                    <ul class="list-unstyled small text-pro-muted">
+                        <li class="mb-2">
+                            <i class="fas fa-clock me-2 text-warning"></i>
+                            <strong>Duração:</strong>
+                            {{ service.duracao if service else 'N/A' }} minutos
+                        </li>
+
+                        <li>
+                            <i class="fas fa-hand-scissors me-2 text-warning"></i>
+                            <strong>Descrição:</strong>
+                            <span class="d-block mt-1">
+                                {{ service.descricao if service else 'Descrição indisponível.' }}
+                            </span>
+                        </li>
+                    </ul>
                 </div>
             </div>
-            
+
+            <!-- AGENDAMENTO -->
+            <div class="col-lg-8">
+
+                <h5 class="mb-4 text-pro">
+                    <i class="fas fa-tasks me-2 text-info"></i>
+                    Processo de Reserva
+                </h5>
+
+                <!-- PROGRESSO -->
+                <div class="progress mb-4" style="height: 8px;">
+                    <div class="progress-bar bg-warning" style="width: 33%"></div>
+                </div>
+
+                <form method="POST"
+                      action="{{ url_for('client.finalize_booking') }}"
+                      id="booking-form">
+
+                    <input type="hidden" name="service_id" value="{{ service.id }}">
+                    <input type="hidden" name="datetime_slot" id="datetime_slot" required>
+
+                    <!-- DATA -->
+                    <h4 class="text-pro mb-3">
+                        <i class="fas fa-calendar-day me-2 text-warning"></i>
+                        1. Escolha a Data
+                    </h4>
+
+                    <div class="mb-4">
+                        <input type="date"
+                               class="form-control bg-dark text-pro border-secondary"
+                               id="data_agendamento"
+                               name="data_agendamento"
+                               required>
+                    </div>
+
+                    <!-- HORÁRIOS -->
+                    <h4 class="text-pro mt-4 mb-2">
+                        <i class="fas fa-clock me-2 text-warning"></i>
+                        2. Horários Disponíveis
+                    </h4>
+
+                    <p class="small text-pro-muted">
+                        Clique em um horário para selecioná-lo.
+                        Horários indisponíveis aparecem marcados com <strong>(X)</strong>.
+                    </p>
+
+                    <div id="available-slots-container"
+                         class="bg-dark-pro rounded border border-secondary p-3 text-center text-pro-muted">
+                        * Selecione uma data para visualizar os horários *
+                    </div>
+
+                    <!-- AÇÕES -->
+                    <div class="mt-5 pt-4 border-top border-secondary">
+                        <button type="submit"
+                                id="finalize-button"
+                                class="btn btn-success fw-bold me-3"
+                                disabled>
+                            <i class="fas fa-check-circle me-2"></i>
+                            Finalizar Agendamento
+                        </button>
+
+                        <a href="{{ url_for('client.index') }}"
+                           class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>
+                            Voltar
+                        </a>
+                    </div>
+
+                </form>
+
+            </div>
         </div>
     </div>
 </div>
+
 {% endblock %}
-
-
 {% block scripts %}
 <style>
-    /* Estilo para slots indisponíveis */
-    .btn-slot-unavailable {
-        background-color: #333 !important; /* Fundo escuro */
-        color: #777 !important; /* Texto cinza */
-        border-color: #555 !important;
-        cursor: not-allowed;
-        text-decoration: line-through; /* Linha no texto */
-        opacity: 0.7;
-    }
+.btn-slot-unavailable {
+    background-color: #2b2b2b !important;
+    color: #777 !important;
+    border-color: #555 !important;
+    cursor: not-allowed;
+    text-decoration: line-through;
+    opacity: 0.75;
+}
 </style>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Elementos chave
-        const dateInput = document.getElementById('data_agendamento');
-        const slotsContainer = document.getElementById('available-slots-container');
-        const serviceId = document.getElementById('service-details').dataset.serviceId;
-        const datetimeSlotInput = document.getElementById('datetime_slot');
-        const finalizeButton = document.getElementById('finalize-button');
+document.addEventListener('DOMContentLoaded', () => {
 
-        // Função para selecionar um slot (SOMENTE DISPONÍVEL)
-        function selectSlot(event) {
-            // Remove a seleção de todos os botões (apenas os que não estão indisponíveis)
-            document.querySelectorAll('.slot-button:not(.btn-slot-unavailable)').forEach(btn => {
-                btn.classList.remove('btn-warning');
-                btn.classList.add('btn-outline-success');
-            });
+    const dateInput = document.getElementById('data_agendamento');
+    const slotsContainer = document.getElementById('available-slots-container');
+    const serviceId = document.getElementById('service-details').dataset.serviceId;
+    const datetimeInput = document.getElementById('datetime_slot');
+    const finalizeBtn = document.getElementById('finalize-button');
 
-            // Adiciona a seleção ao botão clicado
-            const selectedButton = event.currentTarget;
-            selectedButton.classList.remove('btn-outline-success');
-            selectedButton.classList.add('btn-warning');
-            
-            // Define o valor do campo oculto e ativa o botão de finalizar
-            datetimeSlotInput.value = selectedButton.dataset.datetime;
-            finalizeButton.disabled = false;
+    function selectSlot(e) {
+        document.querySelectorAll('.slot-button:not(.btn-slot-unavailable)').forEach(btn => {
+            btn.classList.remove('btn-warning');
+            btn.classList.add('btn-outline-success');
+        });
+
+        const btn = e.currentTarget;
+        btn.classList.remove('btn-outline-success');
+        btn.classList.add('btn-warning');
+
+        datetimeInput.value = btn.dataset.datetime;
+        finalizeBtn.disabled = false;
+    }
+
+    function loadSlots() {
+        const date = dateInput.value;
+        datetimeInput.value = '';
+        finalizeBtn.disabled = true;
+
+        if (!date) {
+            slotsContainer.innerHTML = '* Selecione uma data para visualizar os horários *';
+            return;
         }
 
-        // Função principal que carrega os slots via AJAX
-        function loadAvailableSlots() {
-            const selectedDate = dateInput.value; // Formato YYYY-MM-DD
-            
-            // Limpa seleções anteriores
-            datetimeSlotInput.value = '';
-            finalizeButton.disabled = true;
+        slotsContainer.innerHTML =
+            '<p class="text-info"><i class="fas fa-spinner fa-spin me-2"></i> Carregando horários...</p>';
 
-            if (!selectedDate || !serviceId) {
-                slotsContainer.innerHTML = '<p class="text-muted">* Por favor, selecione uma data para ver os horários. *</p>';
-                return;
-            }
+        fetch(`{{ url_for('client.available_slots') }}?service_id=${serviceId}&date=${date}`)
+            .then(res => res.json())
+            .then(data => {
+                slotsContainer.innerHTML = '';
 
-            slotsContainer.innerHTML = '<p class="text-info"><i class="fas fa-spinner fa-spin me-2"></i> Verificando horários disponíveis...</p>';
+                if (!data.slots || data.slots.length === 0) {
+                    slotsContainer.innerHTML =
+                        '<p class="text-warning">Nenhum horário disponível para esta data.</p>';
+                    return;
+                }
 
-            // Endpoint corrigido: Certifique-se de que o URL da API está correto
-            fetch(`{{ url_for('client.available_slots') }}?service_id=${serviceId}&date=${selectedDate}`)
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => Promise.reject(err));
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    slotsContainer.innerHTML = '';
-                    if (data.slots && data.slots.length > 0) {
-                        data.slots.forEach(slot => {
-                            const button = document.createElement('button');
-                            button.type = 'button';
-                            button.classList.add('btn', 'm-2', 'slot-button');
-                            
-                            // 🚨 LÓGICA DE INDISPONIBILIDADE APLICADA 🚨
-                            if (slot.status === 'unavailable') {
-                                button.className += ' btn-slot-unavailable';
-                                button.disabled = true;
-                                
-                                // CORREÇÃO: Usar apenas slot.time para evitar o 'undefined'
-                                button.textContent = `${slot.time} (X)`; 
-                            } else {
-                                button.className += ' btn-outline-success';
-                                button.dataset.datetime = slot.datetime_slot; // YYYY-MM-DD HH:MM
-                                
-                                // CORREÇÃO: Usar apenas slot.time para evitar o 'undefined'
-                                button.textContent = `${slot.time}`; 
-                                
-                                // Adiciona o evento de seleção SOMENTE para slots disponíveis
-                                button.addEventListener('click', selectSlot);
-                            }
+                data.slots.forEach(slot => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.classList.add('btn', 'm-2', 'slot-button');
 
-                            slotsContainer.appendChild(button);
-                        });
-                    } else if (data.message) {
-                        slotsContainer.innerHTML = `<p class="text-warning"><i class="fas fa-exclamation-triangle me-2"></i> ${data.message}</p>`;
+                    if (slot.status === 'unavailable') {
+                        btn.classList.add('btn-slot-unavailable');
+                        btn.disabled = true;
+                        btn.textContent = `${slot.time} (X)`;
                     } else {
-                        slotsContainer.innerHTML = '<p class="text-danger"><i class="fas fa-times-circle me-2"></i> Nenhum horário disponível para esta data.</p>';
+                        btn.classList.add('btn-outline-success');
+                        btn.dataset.datetime = slot.datetime_slot;
+                        btn.textContent = slot.time;
+                        btn.addEventListener('click', selectSlot);
                     }
-                })
-                .catch(error => {
-                    console.error('Erro ao carregar slots:', error);
-                    let message = 'Erro desconhecido ao carregar horários.';
-                    if (error.error) {
-                        message = error.error; 
-                    }
-                    slotsContainer.innerHTML = `<p class="text-danger"><i class="fas fa-exclamation-triangle me-2"></i> Erro: ${message}</p>`;
-                });
-        }
 
-        // 1. Carregar slots quando a data mudar
-        dateInput.addEventListener('change', loadAvailableSlots);
-        
-        // Carregar slots se a data já estiver preenchida ao carregar a página
-        if (dateInput.value) {
-            loadAvailableSlots();
-        }
-    });
+                    slotsContainer.appendChild(btn);
+                });
+            })
+            .catch(() => {
+                slotsContainer.innerHTML =
+                    '<p class="text-danger">Erro ao carregar horários.</p>';
+            });
+    }
+
+    dateInput.addEventListener('change', loadSlots);
+});
 </script>
 {% endblock %}
