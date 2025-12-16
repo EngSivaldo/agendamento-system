@@ -40,9 +40,10 @@ class User(db.Model, UserMixin, BaseMixin):
 # =============================================================
 User.agendamentos = db.relationship(
     'Booking', 
-    back_populates='cliente', 
+    back_populates='user', # 🚨 MUDANÇA AQUI: Era 'cliente', agora é 'user'
     lazy='dynamic'
 )
+# ---
 # -------------------------------------------------------------
 # COMANDO CLI 
 

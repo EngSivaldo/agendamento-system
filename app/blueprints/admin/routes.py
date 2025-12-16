@@ -404,3 +404,50 @@ def cancel_booking(booking_id):
         flash('O agendamento já estava cancelado.', 'info')
         
     return redirect(url_for('admin.manage_bookings'))
+
+
+# app/blueprints/admin/routes.py (ADICIONE ESTA ROTA)
+
+@admin_bp.route('/schedules/edit/<int:schedule_id>', methods=['GET', 'POST'])
+@admin_required
+def edit_schedule(schedule_id):
+    """RF04 - Edita um bloco de horário existente."""
+    
+    # 1. Obter o schedule existente
+    schedule = Schedule.query.get_or_404(schedule_id)
+    
+    dias_semana_map = {
+        0: 'Segunda-feira', 1: 'Terça-feira', 2: 'Quarta-feira', 
+        3: 'Quinta-feira', 4: 'Sexta-feira', 5: 'Sábado', 6: 'Domingo'
+    }
+    
+    if request.method == 'POST':
+        dia_semana = request.form.get('dia_semana', type=int)
+        hora_inicio = request.form.get('hora_inicio')
+        hora_fim = request.form.get('hora_fim')
+        
+        # 2. Validação de Conflito de Horário (Excluindo o próprio horário atual)
+        existing_schedule = Schedule.query.filter(
+            Schedule.dia_semana == dia_semana,
+            Schedule.id != schedule_id, # <--- ESSENCIAL: Ignorar o item que está sendo editado
+            Schedule.hora_inicio < hora_fim, 
+            Schedule.hora_fim > hora_inicio 
+        ).first()
+
+        if existing_schedule:
+            flash(f'Conflito de horário! Já existe um bloco cadastrado para {dias_semana_map.get(dia_semana)} que se sobrepõe.', 'danger')
+            return redirect(url_for('admin.edit_schedule', schedule_id=schedule_id)) # Usa 'admin'
+
+        # 3. Atualizar e salvar
+        schedule.dia_semana = dia_semana
+        schedule.hora_inicio = hora_inicio
+        schedule.hora_fim = hora_fim
+        schedule.save()
+        
+        flash(f'Horário de {hora_inicio} às {hora_fim} em {dias_semana_map.get(dia_semana)} atualizado com sucesso!', 'success')
+        return redirect(url_for('admin.manage_schedules')) # Usa 'admin'
+
+    # Para GET: Exibir o formulário preenchido
+    return render_template('admin/schedule_form.html', 
+                           schedule=schedule, # Passa o objeto schedule para preencher o form
+                           dias_semana_map=dias_semana_map)

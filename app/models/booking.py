@@ -29,8 +29,9 @@ class Booking(db.Model, BaseMixin):
 # DEFINIÇÃO TARDIA DE TODOS OS RELACIONAMENTOS
 # =============================================================
 
-# 1. Relação com User
-Booking.cliente = db.relationship(
+# 1. Relação com User (CORREÇÃO AQUI: Mudança de 'cliente' para 'user')
+# Esta correção alinha o modelo com o que o template admin/manage_bookings.html espera.
+Booking.user = db.relationship( 
     'User', 
     back_populates='agendamentos'
 )
