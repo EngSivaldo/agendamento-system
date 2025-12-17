@@ -3,107 +3,103 @@
 {% block title %}Cadastro | AgendaPRO{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center align-items-center pt-5">
+<div class="row justify-content-center align-items-center py-5">
 
     <div class="col-lg-5 col-md-8">
 
-        <!-- CARD CADASTRO -->
         <div class="card motion-card shadow-epic border border-warning">
 
-            <!-- HEADER -->
-            <div class="card-header bg-dark-pro border-bottom border-warning text-center py-4">
-                <h3 class="mb-0 fw-bold text-warning">
-                    <i class="fas fa-user-plus me-2"></i>
+            <header class="card-header bg-dark border-bottom border-warning text-center py-4">
+                <h1 class="h3 mb-0 fw-bold text-warning"> {# Usando h1 para semântica #}
+                    <i class="fas fa-user-plus me-2" aria-hidden="true"></i>
                     Criar Conta
-                </h3>
-                <small class="text-pro-muted">
+                </h1>
+                <p class="text-pro-muted small mb-0">
                     Cadastro rápido e seguro
-                </small>
-            </div>
+                </p>
+            </header>
 
-            <!-- BODY -->
             <div class="card-body p-4 p-md-5">
 
-                <h4 class="mb-4 fw-light text-pro text-center">
+                <h2 class="h4 mb-4 fw-light text-pro text-center">
                     Junte-se ao AgendaPRO
-                </h4>
+                </h2>
 
-                <form method="POST" novalidate>
+                <form method="POST" novalidate aria-label="Formulário de Cadastro">
 
-                    <!-- NOME -->
                     <div class="mb-3">
                         <label for="nome" class="form-label fw-bold text-pro-muted">
-                            <i class="fas fa-user me-2 text-warning"></i>
+                            <i class="fas fa-user me-2 text-warning" aria-hidden="true"></i>
                             Nome Completo
                         </label>
                         <input type="text"
-                               class="form-control"
+                               class="form-control bg-dark border-secondary text-pro" {# Adicionado classes de tema ao input #}
                                id="nome"
                                name="nome"
                                placeholder="Seu nome completo"
+                               autocomplete="name" {# Adicionado autocomplete para nome #}
                                required>
                     </div>
 
-                    <!-- EMAIL -->
                     <div class="mb-3">
                         <label for="email" class="form-label fw-bold text-pro-muted">
-                            <i class="fas fa-envelope me-2 text-warning"></i>
+                            <i class="fas fa-envelope me-2 text-warning" aria-hidden="true"></i>
                             Email
                         </label>
                         <input type="email"
-                               class="form-control"
+                               class="form-control bg-dark border-secondary text-pro" {# Adicionado classes de tema ao input #}
                                id="email"
                                name="email"
                                placeholder="seu@email.com"
+                               autocomplete="email" {# Adicionado autocomplete para email #}
                                required>
                     </div>
 
-                    <!-- SENHA -->
                     <div class="mb-3">
                         <label for="senha" class="form-label fw-bold text-pro-muted">
-                            <i class="fas fa-lock me-2 text-warning"></i>
+                            <i class="fas fa-lock me-2 text-warning" aria-hidden="true"></i>
                             Senha
                         </label>
                         <input type="password"
-                               class="form-control"
+                               class="form-control bg-dark border-secondary text-pro" {# Adicionado classes de tema ao input #}
                                id="senha"
                                name="senha"
                                placeholder="Crie uma senha segura"
+                               autocomplete="new-password" {# MUITO IMPORTANTE: usar new-password #}
                                required>
                     </div>
 
-                    <!-- CONFIRMAR SENHA -->
                     <div class="mb-4">
                         <label for="confirm_senha" class="form-label fw-bold text-pro-muted">
-                            <i class="fas fa-key me-2 text-warning"></i>
+                            <i class="fas fa-key me-2 text-warning" aria-hidden="true"></i>
                             Confirmar Senha
                         </label>
                         <input type="password"
-                               class="form-control"
+                               class="form-control bg-dark border-secondary text-pro" {# Adicionado classes de tema ao input #}
                                id="confirm_senha"
                                name="confirm_senha"
                                placeholder="Repita a senha"
+                               autocomplete="new-password" {# MUITO IMPORTANTE: usar new-password #}
                                required>
                     </div>
 
-                    <!-- BOTÃO -->
                     <button type="submit"
-                            class="btn btn-warning fw-bold w-100 py-2 mt-2">
-                        <i class="fas fa-user-plus me-2"></i>
+                            class="btn btn-warning fw-bold w-100 py-2 mt-3">
+                        <i class="fas fa-user-plus me-2" aria-hidden="true"></i>
                         Criar Conta
                     </button>
 
                 </form>
 
-                <!-- LINK LOGIN -->
-                <p class="mt-4 text-center text-pro-muted">
-                    Já tem uma conta?
-                    <a href="{{ url_for('auth.login') }}"
-                       class="text-warning fw-bold text-decoration-none hover-warning">
-                        Fazer login
-                    </a>
-                </p>
-
+                <footer class="mt-4 text-center">
+                    <p class="text-pro-muted mb-0">
+                        Já tem uma conta?
+                        <a href="{{ url_for('auth.login') }}"
+                           class="text-warning fw-bold text-decoration-none hover-warning">
+                            Fazer login
+                        </a>
+                    </p>
+                </footer>
             </div>
         </div>
 

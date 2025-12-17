@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Gerenciar Usuários{% endblock %}
+{% block title %}Gerenciar Usuários | Admin{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -8,68 +8,80 @@
     
     <div class="col-md-9">
         
-        <h2 class="mb-5 text-warning fw-light border-bottom border-warning pb-2">
-            <i class="fas fa-users-cog me-2"></i> Gerenciar Usuários
-        </h2>
+        <h1 class="h2 mb-5 text-warning fw-light border-bottom border-warning pb-2"> {# Alterado h2 para h1 #}
+            <i class="fas fa-users-cog me-2" aria-hidden="true"></i> Gerenciar Usuários
+        </h1>
 
-        <a href="{{ url_for('admin.new_user') }}" class="btn btn-warning fw-bold mb-4 shadow-sm">
-            <i class="fas fa-user-plus me-2"></i> Novo Usuário
+        <a href="{{ url_for('admin.new_user') }}" class="btn btn-warning fw-bold mb-4 shadow-sm" aria-label="Adicionar Novo Usuário">
+            <i class="fas fa-user-plus me-2" aria-hidden="true"></i> Novo Usuário
         </a>
 
-        <div class="card bg-dark shadow-epic p-0">
+        <div class="card bg-dark shadow-epic p-0 border border-secondary">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-dark table-striped table-hover mb-0">
+                    <table class="table table-dark table-striped table-hover mb-0" aria-label="Lista de Usuários Cadastrados">
                         <thead class="text-warning border-warning border-bottom">
                             <tr>
-                                <th>Nome</th>
-                                <th>Email</th>
-                                <th class="text-center">Permissão</th>
-                                <th class="text-center">Status</th>
-                                <th class="text-center">Ações</th>
+                                <th scope="col">Nome</th>
+                                <th scope="col">Email</th>
+                                <th scope="col" class="text-center">Permissão</th>
+                                <th scope="col" class="text-center">Status</th>
+                                <th scope="col" class="text-center">Ações</th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for user in users %}
                             <tr class="align-middle">
-                                <td class="fw-bold">{{ user.nome }}</td>
-                                <td>{{ user.email }}</td>
+                                <th scope="row" class="fw-bold">{{ user.nome }}</th> {# th para acessibilidade #}
+                                <td><a href="mailto:{{ user.email }}" class="text-info text-decoration-none">{{ user.email }}</a></td>
+                                
                                 <td class="text-center">
                                     {% if user.is_admin %}
-                                        <span class="badge bg-danger fw-bold"><i class="fas fa-crown"></i> Admin</span>
+                                        <span class="badge bg-danger fw-bold py-2 px-3">
+                                            <i class="fas fa-crown me-1" aria-hidden="true"></i> Administrador
+                                        </span>
                                     {% else %}
-                                        <span class="badge bg-info fw-bold"><i class="fas fa-user"></i> Cliente</span>
+                                        <span class="badge bg-info fw-bold py-2 px-3">
+                                            <i class="fas fa-user me-1" aria-hidden="true"></i> Cliente
+                                        </span>
                                     {% endif %}
                                 </td>
+                                
                                 <td class="text-center">
                                     {% if user.is_active %}
-                                        <span class="badge bg-success">Ativo</span>
+                                        <span class="badge bg-success py-2 px-3">Ativo</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">Inativo</span>
+                                        <span class="badge bg-secondary py-2 px-3">Inativo</span>
                                     {% endif %}
                                 </td>
-                                <td class="text-center">
+                                
+                                <td class="text-center text-nowrap">
                                     
                                     <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" 
                                        class="btn btn-sm btn-outline-info me-2" 
-                                       title="Editar Usuário">
-                                        <i class="fas fa-edit"></i>
+                                       title="Editar Usuário: {{ user.nome }}"
+                                       aria-label="Editar Usuário">
+                                        <i class="fas fa-edit" aria-hidden="true"></i>
                                     </a>
                                     
                                     <form action="{{ url_for('admin.delete_user', user_id=user.id) }}" 
                                           method="POST" 
                                           style="display:inline;" 
-                                          onsubmit="return confirm('ATENÇÃO! Tem certeza que deseja excluir o usuário {{ user.nome }}?');">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir Usuário">
-                                            <i class="fas fa-trash-alt"></i>
+                                          onsubmit="return confirm('ATENÇÃO! Tem certeza que deseja excluir o usuário {{ user.nome }}? Essa ação é irreversível.');">
+                                        <button type="submit" 
+                                                class="btn btn-sm btn-outline-danger" 
+                                                title="Excluir Usuário: {{ user.nome }}"
+                                                aria-label="Excluir Usuário">
+                                            <i class="fas fa-trash-alt" aria-hidden="true"></i>
                                         </button>
                                     </form>
                                 </td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="5" class="text-center py-4 text-muted">
-                                    <i class="fas fa-exclamation-triangle me-2"></i> Nenhum usuário cadastrado.
+                                <td colspan="5" class="text-center py-5 text-pro-muted"> {# Aumentado padding e padronizado a classe de texto #}
+                                    <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i> 
+                                    **Nenhum usuário cadastrado.** Use o botão "Novo Usuário" para começar.
                                 </td>
                             </tr>
                             {% endfor %}

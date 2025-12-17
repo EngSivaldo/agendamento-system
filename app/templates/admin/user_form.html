@@ -6,66 +6,106 @@
 
 {% block content %}
 <div class="row">
-    {% include "admin/admin_sidebar.html" %}
+    {# Assumindo que a sidebar de administração está inclusa aqui #}
+    {% include "admin/admin_sidebar.html" %} 
     
     <div class="col-md-9">
         
-        <h2 class="mb-5 text-warning fw-light border-bottom border-warning pb-2">
-            <i class="fas fa-user-edit me-2"></i> 
-            {{ 'Editar Usuário' if user else 'Cadastrar Novo Usuário' }}
-        </h2>
+        <h1 class="h2 mb-5 text-warning fw-light border-bottom border-warning pb-2">
+            <i class="fas fa-user-edit me-2" aria-hidden="true"></i> 
+            {{ 'Editar Usuário: ' ~ user.nome if user else 'Cadastrar Novo Usuário' }}
+        </h1>
         
         <div class="card bg-dark shadow-epic border border-secondary">
             <div class="card-body p-4 p-md-5">
                 
                 {% set form_action = url_for('admin.edit_user', user_id=user.id) if user else url_for('admin.new_user') %}
-                <form method="POST" action="{{ form_action }}">
+                <form method="POST" action="{{ form_action }}" aria-label="{{ 'Formulário de Edição de Usuário' if user else 'Formulário de Cadastro de Usuário' }}">
                     
                     <div class="mb-4">
-                        <label for="nome" class="form-label text-white-50 fw-bold">
-                            <i class="fas fa-user me-2 text-warning"></i> Nome Completo:
+                        <label for="nome" class="form-label text-pro-muted fw-bold"> {# Alterado text-white-50 para text-pro-muted #}
+                            <i class="fas fa-user me-2 text-warning" aria-hidden="true"></i> Nome Completo:
                         </label>
-                        <input type="text" class="form-control bg-dark text-white border-secondary" id="nome" name="nome" value="{{ user.nome if user else '' }}" required>
+                        <input type="text" 
+                               class="form-control bg-dark border-secondary text-pro" 
+                               id="nome" 
+                               name="nome" 
+                               value="{{ user.nome or '' }}" 
+                               autocomplete="name" {# Adicionado autocomplete #}
+                               required>
                     </div>
                     
                     <div class="mb-4">
-                        <label for="email" class="form-label text-white-50 fw-bold">
-                            <i class="fas fa-envelope me-2 text-warning"></i> Email:
+                        <label for="email" class="form-label text-pro-muted fw-bold">
+                            <i class="fas fa-envelope me-2 text-warning" aria-hidden="true"></i> Email:
                         </label>
-                        <input type="email" class="form-control bg-dark text-white border-secondary" id="email" name="email" value="{{ user.email if user else '' }}" required>
+                        <input type="email" 
+                               class="form-control bg-dark border-secondary text-pro" 
+                               id="email" 
+                               name="email" 
+                               value="{{ user.email or '' }}" 
+                               autocomplete="email" {# Adicionado autocomplete #}
+                               required>
                     </div>
                     
                     <div class="mb-4">
-                        <label for="senha" class="form-label text-white-50 fw-bold">
-                            <i class="fas fa-lock me-2 text-warning"></i> Senha: 
-                            <span class="small text-muted">{% if user %}(Deixe em branco para não alterar){% endif %}</span>
+                        <label for="senha" class="form-label text-pro-muted fw-bold">
+                            <i class="fas fa-lock me-2 text-warning" aria-hidden="true"></i> Senha: 
+                            {% if user %}
+                                <span class="small text-muted fw-normal">(Deixe em branco para não alterar)</span>
+                            {% else %}
+                                <span class="small text-danger fw-normal">* Campo obrigatório</span>
+                            {% endif %}
                         </label>
-                        <input type="password" class="form-control bg-dark text-white border-secondary" id="senha" name="senha" {% if not user %}required{% endif %}>
+                        <input type="password" 
+                               class="form-control bg-dark border-secondary text-pro" 
+                               id="senha" 
+                               name="senha" 
+                               autocomplete="{{ 'new-password' if not user else 'off' }}" {# Crucial para evitar preenchimento automático indesejado #}
+                               {% if not user %}required{% endif %}>
                     </div>
                     
+                    <hr class="border-secondary my-4">
+
                     <div class="form-check form-switch mb-4">
+                        {# Lógica Jinja2 aprimorada: usar 'is_admin' se for edição, ou padrão para false se for novo #}
                         {% set is_admin_checked = 'checked' if user and user.is_admin else '' %}
-                        <input class="form-check-input bg-warning border-warning" type="checkbox" id="is_admin" name="is_admin" value="1" {{ is_admin_checked }}>
-                        <label class="form-check-label text-white-50 fw-bold" for="is_admin">
-                            <i class="fas fa-crown me-2 text-danger"></i> Conceder Permissão de Administrador
+                        <input class="form-check-input bg-warning border-warning" 
+                               type="checkbox" 
+                               role="switch" 
+                               id="is_admin" 
+                               name="is_admin" 
+                               value="1" 
+                               {{ is_admin_checked }}>
+                        <label class="form-check-label text-pro-muted fw-bold" for="is_admin">
+                            <i class="fas fa-crown me-2 text-danger" aria-hidden="true"></i> Conceder Permissão de Administrador
+                            <span class="d-block small text-muted fw-normal">Acesso total à área administrativa e configurações.</span>
                         </label>
                     </div>
 
                     <div class="form-check form-switch mb-4">
+                        {# Padrão: Ativo se for novo, ou usa 'is_active' se for edição #}
                         {% set is_active_checked = 'checked' if not user or user.is_active else '' %}
-                        <input class="form-check-input bg-warning border-warning" type="checkbox" id="is_active" name="is_active" value="1" {{ is_active_checked }}>
-                        <label class="form-check-label text-white-50 fw-bold" for="is_active">
-                            <i class="fas fa-toggle-on me-2 text-success"></i> Usuário Ativo (Pode fazer login)
+                        <input class="form-check-input bg-warning border-warning" 
+                               type="checkbox" 
+                               role="switch" 
+                               id="is_active" 
+                               name="is_active" 
+                               value="1" 
+                               {{ is_active_checked }}>
+                        <label class="form-check-label text-pro-muted fw-bold" for="is_active">
+                            <i class="fas fa-toggle-on me-2 text-success" aria-hidden="true"></i> Usuário Ativo
+                            <span class="d-block small text-muted fw-normal">Se desmarcado, o usuário não poderá fazer login.</span>
                         </label>
                     </div>
                     
                     <div class="mt-4 pt-3 border-top border-secondary">
                         <button type="submit" class="btn btn-warning fw-bold me-3">
-                            <i class="fas fa-save me-2"></i> 
+                            <i class="fas fa-save me-2" aria-hidden="true"></i> 
                             {{ 'Salvar Alterações' if user else 'Cadastrar Usuário' }}
                         </button>
                         <a href="{{ url_for('admin.manage_users') }}" class="btn btn-secondary">
-                            <i class="fas fa-times me-2"></i> Cancelar
+                            <i class="fas fa-times me-2" aria-hidden="true"></i> Cancelar
                         </a>
                     </div>
                 </form>

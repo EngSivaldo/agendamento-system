@@ -1,89 +1,104 @@
 {% extends "base.html" %}
 
-{% block title %}Dashboard Admin{% endblock %}
+{% block title %}Dashboard Admin | AgendaPRO{% endblock %}
 
 {% block content %}
 <div class="row">
+    {# Inclui a barra lateral de navegação da administração #}
     {% include "admin/admin_sidebar.html" %}
     
     <div class="col-md-9">
         
-        <h2 class="mb-5 text-warning fw-light border-bottom border-warning pb-2">
-            <i class="fas fa-chart-line me-2"></i> Visão Geral do Sistema
-        </h2>
+        <h1 class="h2 mb-5 text-warning fw-light border-bottom border-warning pb-2">
+            <i class="fas fa-chart-line me-2" aria-hidden="true"></i> Visão Geral do Sistema
+        </h1>
         
         <div class="row">
             
-            <div class="col-md-4 mb-4">
-                <div class="card text-light bg-dark-pro shadow-epic motion-card">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card bg-dark-pro shadow-epic motion-card border border-info">
                     <div class="card-body py-4">
                         <div class="d-flex align-items-center">
-                            <i class="fas fa-scissors fa-3x text-info me-4"></i> 
+                            <i class="fas fa-scissors fa-3x text-info me-4" aria-hidden="true"></i> 
                             
                             <div>
-                                <h5 class="card-title text-muted fw-bold mb-1">Serviços Ativos</h5>
-                                <p class="card-text fs-1 fw-bold text-white">{{ total_services }}</p> 
+                                <h2 class="h6 card-title text-pro-muted fw-bold mb-1">Serviços Ativos</h2>
+                                <p class="card-text display-4 fw-bold text-white mb-0">{{ total_services }}</p> 
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer bg-dark border-top border-info">
-                        <a href="{{ url_for('admin.manage_services') }}" class="text-info text-decoration-none small fw-bold">
-                            Gerenciar Serviços <i class="fas fa-arrow-circle-right ms-1"></i>
+                    <div class="card-footer bg-dark border-top border-info p-3">
+                        <a href="{{ url_for('admin.manage_services') }}" 
+                           class="text-info text-decoration-none small fw-bold d-flex justify-content-between align-items-center"
+                           aria-label="Gerenciar Serviços">
+                            Gerenciar Catálogo
+                            <i class="fas fa-arrow-circle-right ms-1" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
             </div>
             
-            <div class="col-md-4 mb-4">
-                <div class="card text-light bg-dark-pro shadow-epic motion-card">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card bg-dark-pro shadow-epic motion-card border border-success">
                     <div class="card-body py-4">
                         <div class="d-flex align-items-center">
-                            <i class="fas fa-users fa-3x text-success me-4"></i> 
+                            <i class="fas fa-users fa-3x text-success me-4" aria-hidden="true"></i> 
                             <div>
-                                <h5 class="card-title text-muted fw-bold mb-1">Total de Usuários</h5>
-                                <p class="card-text fs-1 fw-bold text-white">{{ total_users }}</p>
+                                <h2 class="h6 card-title text-pro-muted fw-bold mb-1">Total de Usuários</h2>
+                                <p class="card-text display-4 fw-bold text-white mb-0">{{ total_users }}</p>
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer bg-dark border-top border-success">
-                        <span class="text-success small fw-bold">Clientes e Administradores</span>
+                    <div class="card-footer bg-dark border-top border-success p-3">
+                        <a href="{{ url_for('admin.manage_users') }}" 
+                           class="text-success text-decoration-none small fw-bold d-flex justify-content-between align-items-center"
+                           aria-label="Gerenciar Usuários">
+                            Gerenciar Usuários
+                            <i class="fas fa-arrow-circle-right ms-1" aria-hidden="true"></i>
+                        </a>
                     </div>
                 </div>
             </div>
 
-            <div class="col-md-4 mb-4">
-                <div class="card text-dark bg-warning shadow-epic motion-card">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card bg-warning shadow-epic motion-card border border-dark">
                     <div class="card-body py-4">
                         <div class="d-flex align-items-center">
-                            <i class="fas fa-calendar-check fa-3x text-dark me-4"></i> 
+                            <i class="fas fa-calendar-check fa-3x text-dark me-4" aria-hidden="true"></i> 
                             <div>
-                                <h5 class="card-title text-dark fw-bold mb-1">Agendamentos Pendentes</h5>
-                                <p class="card-text fs-1 fw-bold text-dark">{{ total_bookings }}</p>
+                                <h2 class="h6 card-title text-dark fw-bold mb-1">Agendamentos Pendentes</h2>
+                                <p class="card-text display-4 fw-bold text-dark mb-0">{{ total_bookings }}</p>
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer bg-dark text-warning border-top border-dark">
-                        <a href="#" class="text-warning text-decoration-none small fw-bold">
-                            Ver Agendamentos (RF05)
+                    <div class="card-footer bg-dark text-warning border-top border-dark p-3">
+                        <a href="{{ url_for('admin.manage_bookings') }}" {# Assumindo uma rota real #}
+                           class="text-warning text-decoration-none small fw-bold d-flex justify-content-between align-items-center"
+                           aria-label="Ver Agendamentos Pendentes">
+                            Ver Agendamentos
+                            <i class="fas fa-arrow-circle-right ms-1" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
             </div>
             
-            <div class="col-md-4 mb-4">
-                <div class="card text-light bg-dark-pro shadow-epic motion-card">
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card bg-dark-pro shadow-epic motion-card border border-secondary">
                     <div class="card-body py-4">
                         <div class="d-flex align-items-center">
-                            <i class="fas fa-clock fa-3x text-secondary me-4"></i> 
+                            <i class="fas fa-clock fa-3x text-secondary me-4" aria-hidden="true"></i> 
                             <div>
-                                <h5 class="card-title text-muted fw-bold mb-1">Horários Configurados</h5>
-                                <p class="card-text fs-1 fw-bold text-white">{{ total_schedules if total_schedules is defined else 0 }}</p>
+                                <h2 class="h6 card-title text-pro-muted fw-bold mb-1">Horários Configurados</h2>
+                                <p class="card-text display-4 fw-bold text-white mb-0">{{ total_schedules if total_schedules is defined else 0 }}</p>
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer bg-dark border-top border-secondary">
-                         <a href="{{ url_for('admin.manage_schedules') }}" class="text-secondary text-decoration-none small fw-bold">
-                            Gerenciar Horários <i class="fas fa-arrow-circle-right ms-1"></i>
+                    <div class="card-footer bg-dark border-top border-secondary p-3">
+                        <a href="{{ url_for('admin.manage_schedules') }}" 
+                           class="text-secondary text-decoration-none small fw-bold d-flex justify-content-between align-items-center"
+                           aria-label="Gerenciar Horários de Funcionamento">
+                            Gerenciar Horários
+                            <i class="fas fa-arrow-circle-right ms-1" aria-hidden="true"></i>
                         </a>
                     </div>
                 </div>
@@ -93,12 +108,14 @@
         
         <hr class="border-secondary mt-3 mb-5">
         
-        <h4 class="mb-4 text-white">Relatórios Rápidos e Atividades Recentes</h4>
+        <h3 class="mb-4 text-white">Relatórios Rápidos e Atividades Recentes</h3>
         
-        <div class="card bg-dark shadow-epic text-white-50">
+        <div class="card bg-dark shadow-epic border border-secondary">
             <div class="card-body">
-                <p class="mb-0">Este painel é o seu centro de comando. Em breve, gráficos e relatórios em tempo real serão adicionados aqui. Por enquanto, monitore as métricas principais acima.</p>
-                <a href="#" class="text-warning small mt-2 d-block">Configurar Webhooks (Futuro)</a>
+                <p class="mb-0 text-pro-muted"> {# Substituído text-white-50 #}
+                    Este painel é o seu centro de comando. Em breve, gráficos e relatórios em tempo real serão adicionados aqui. Por enquanto, monitore as métricas principais acima.
+                </p>
+                <a href="#" class="text-warning small mt-2 d-block text-decoration-none">Configurar Webhooks (Futuro) <i class="fas fa-external-link-alt ms-1"></i></a>
             </div>
         </div>
         

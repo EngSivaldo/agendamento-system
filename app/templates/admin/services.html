@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Gerenciar Serviços{% endblock %}
+{% block title %}Gerenciar Serviços | Admin{% endblock %}
 
 {% block content %}
 <div class="row">
@@ -8,56 +8,73 @@
     
     <div class="col-md-9">
         
-        <h2 class="mb-5 text-warning fw-light border-bottom border-warning pb-2">
-            <i class="fas fa-scissors me-2"></i> Gerenciar Catálogo de Serviços
-        </h2>
+        <h1 class="h2 mb-5 text-warning fw-light border-bottom border-warning pb-2">
+            <i class="fas fa-scissors me-2" aria-hidden="true"></i> Gerenciar Catálogo de Serviços
+        </h1>
 
-        <a href="{{ url_for('admin.new_service') }}" class="btn btn-warning fw-bold mb-4 shadow-sm">
-            <i class="fas fa-plus me-2"></i> Novo Serviço
+        <a href="{{ url_for('admin.new_service') }}" 
+           class="btn btn-warning fw-bold mb-4 shadow-sm"
+           role="button"
+           aria-label="Adicionar Novo Serviço">
+            <i class="fas fa-plus me-2" aria-hidden="true"></i> Novo Serviço
         </a>
 
-        <div class="card bg-dark shadow-epic p-0">
+        <div class="card bg-dark shadow-epic p-0 border border-secondary">
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-dark table-striped table-hover mb-0">
+                    {# Aprimorando a semântica da tabela para acessibilidade #}
+                    <table class="table table-dark table-striped table-hover mb-0" 
+                           aria-label="Lista de Serviços Cadastrados">
+                        
                         <thead class="text-warning border-warning border-bottom">
                             <tr>
-                                <th>Nome</th>
-                                <th class="text-center">Duração (min)</th>
-                                <th>Descrição</th>
-                                <th class="text-center">Ações</th>
+                                <th scope="col">Nome</th>
+                                <th scope="col" class="text-center">Duração (min)</th>
+                                <th scope="col">Descrição</th>
+                                <th scope="col" class="text-center">Ações</th>
                             </tr>
                         </thead>
+                        
                         <tbody>
                             {% for service in services %}
                             <tr class="align-middle">
-                                <td class="fw-bold">{{ service.nome }}</td>
+                                <th scope="row" class="fw-bold">{{ service.nome }}</th>
                                 <td class="text-center">{{ service.duracao }}</td>
-                                <td class="text-muted small">
-                                    {{ service.descricao if service.descricao and service.descricao|length < 50 else (service.descricao[:50] + '...' if service.descricao else 'N/A') }}
+                                <td class="text-pro-muted small"> {# Classe mais consistente #}
+                                    {% if service.descricao %}
+                                        {# Usando |truncate(length, end, killwords) #}
+                                        {{ service.descricao | truncate(50, True, '...') }}
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
                                 </td>
-                                <td class="text-center">
+                                <td class="text-center text-nowrap">
                                     
                                     <a href="{{ url_for('admin.edit_service', service_id=service.id) }}" 
                                        class="btn btn-sm btn-outline-info me-2" 
-                                       title="Editar Serviço">
-                                        <i class="fas fa-edit"></i>
+                                       title="Editar {{ service.nome }}"
+                                       aria-label="Editar serviço {{ service.nome }}">
+                                        <i class="fas fa-edit" aria-hidden="true"></i>
                                     </a>
                                     
                                     <form action="{{ url_for('admin.delete_service', service_id=service.id) }}" 
                                           method="POST" 
                                           style="display:inline;" 
                                           onsubmit="return confirm('ATENÇÃO! Tem certeza que deseja excluir o serviço {{ service.nome }}? Esta ação é irreversível e pode afetar agendamentos existentes.');">
-                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Excluir Serviço">
-                                            <i class="fas fa-trash-alt"></i>
+                                        <button type="submit" 
+                                                class="btn btn-sm btn-outline-danger" 
+                                                title="Excluir {{ service.nome }}"
+                                                aria-label="Excluir serviço {{ service.nome }}">
+                                            <i class="fas fa-trash-alt" aria-hidden="true"></i>
                                         </button>
                                     </form>
                                 </td>
                             </tr>
                             {% else %}
                             <tr>
-                                <td colspan="4" class="text-center py-4 text-muted">
-                                    <i class="fas fa-exclamation-triangle me-2"></i> Nenhum serviço cadastrado. Comece adicionando um novo serviço!
+                                <td colspan="4" class="text-center py-5 text-pro-muted">
+                                    <i class="fas fa-exclamation-triangle me-2" aria-hidden="true"></i> 
+                                    **Nenhum serviço cadastrado.** Comece adicionando um novo serviço acima.
                                 </td>
                             </tr>
                             {% endfor %}

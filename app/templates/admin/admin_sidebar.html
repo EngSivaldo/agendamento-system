@@ -1,53 +1,64 @@
 {% set active_page = request.endpoint %}
 
 <div class="col-md-3">
-    <div class="card shadow-epic rounded-3 border-0 motion-card"> 
+    <div class="card shadow-epic rounded-3 border border-secondary motion-card"> {# Adicionado border-secondary para consistência #}
         
-        <div class="card-header bg-dark-pro text-warning fw-bold border-bottom border-warning py-3">
-            <i class="fas fa-tools me-2 fa-lg"></i> Painel Administrativo
-        </div>
+        <header class="card-header bg-dark border-bottom border-warning py-3"> {# Alterado bg-dark-pro para bg-dark (assumindo bg-dark é o tema de superfície) #}
+            <h2 class="h5 mb-0 text-warning fw-bold">
+                <i class="fas fa-tools me-2 fa-lg" aria-hidden="true"></i> Painel Administrativo
+            </h2>
+        </header>
         
-        <div class="list-group list-group-flush">
+        <nav class="list-group list-group-flush bg-dark">
             
-            <a href="{{ url_for('admin.dashboard') }}" 
+            {# Rota: Dashboard #}
+            {% set dashboard_endpoint = 'admin.dashboard' %}
+            <a href="{{ url_for(dashboard_endpoint) }}" 
                class="list-group-item list-group-item-action py-3 hover-warning 
-               {% if active_page == 'admin.dashboard' %}active bg-warning text-dark fw-bold motion-card-active{% else %}bg-dark text-white-75{% endif %}"
-               {% if active_page == 'admin.dashboard' %}aria-current="true"{% endif %}>
-                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+               {% if active_page == dashboard_endpoint %}active bg-warning text-dark fw-bold motion-card-active{% else %}bg-dark text-pro-muted{% endif %}" {# Substituído text-white-75 por text-pro-muted #}
+               {% if active_page == dashboard_endpoint %}aria-current="page"{% endif %}> {# Corrigido para "page" #}
+                 <i class="fas fa-tachometer-alt me-2" aria-hidden="true"></i> Dashboard
             </a>
             
+            {# Rota: Gerenciar Serviços (Inclui New e Edit Service) #}
             {% set services_endpoints = ['admin.manage_services', 'admin.new_service', 'admin.edit_service'] %}
             <a href="{{ url_for('admin.manage_services') }}" 
                class="list-group-item list-group-item-action py-3 hover-warning
-               {% if active_page in services_endpoints %}active bg-warning text-dark fw-bold motion-card-active{% else %}bg-dark text-white-75{% endif %}">
-                <i class="fas fa-scissors me-2"></i> Gerenciar Serviços
+               {% if active_page in services_endpoints %}active bg-warning text-dark fw-bold motion-card-active{% else %}bg-dark text-pro-muted{% endif %}">
+                 <i class="fas fa-scissors me-2" aria-hidden="true"></i> Gerenciar Serviços
             </a>
             
+            {# Rota: Gerenciar Horários (Inclui New e Edit Schedule) #}
             {% set schedules_endpoints = ['admin.manage_schedules', 'admin.new_schedule', 'admin.edit_schedule'] %}
             <a href="{{ url_for('admin.manage_schedules') }}" 
                class="list-group-item list-group-item-action py-3 hover-warning
-               {% if active_page in schedules_endpoints %}active bg-warning text-dark fw-bold motion-card-active{% else %}bg-dark text-white-75{% endif %}">
-                <i class="fas fa-clock me-2"></i> Gerenciar Horários
+               {% if active_page in schedules_endpoints %}active bg-warning text-dark fw-bold motion-card-active{% else %}bg-dark text-pro-muted{% endif %}">
+                 <i class="fas fa-clock me-2" aria-hidden="true"></i> Gerenciar Horários
             </a>
             
+            {# Rota: Gerenciar Agendamentos (Inclui View Booking) #}
             {% set bookings_endpoints = ['admin.manage_bookings', 'admin.view_booking'] %}
             <a href="{{ url_for('admin.manage_bookings') }}" 
                class="list-group-item list-group-item-action py-3 hover-warning
-               {% if active_page in bookings_endpoints %}active bg-warning text-dark fw-bold motion-card-active{% else %}bg-dark text-white-75{% endif %}">
-                <i class="fas fa-calendar-check me-2"></i> Gerenciar Agendamentos (RF05)
+               {% if active_page in bookings_endpoints %}active bg-warning text-dark fw-bold motion-card-active{% else %}bg-dark text-pro-muted{% endif %}">
+                 <i class="fas fa-calendar-check me-2" aria-hidden="true"></i> Gerenciar Agendamentos
             </a>
 
+            {# Rota: Gerenciar Usuários (Inclui New e Edit User) #}
             {% set users_endpoints = ['admin.manage_users', 'admin.new_user', 'admin.edit_user'] %}
             <a href="{{ url_for('admin.manage_users') }}" 
                class="list-group-item list-group-item-action py-3 hover-warning
-               {% if active_page in users_endpoints %}active bg-warning text-dark fw-bold motion-card-active{% else %}bg-dark text-white-75{% endif %}">
-                <i class="fas fa-users me-2"></i> Gerenciar Usuários
+               {% if active_page in users_endpoints %}active bg-warning text-dark fw-bold motion-card-active{% else %}bg-dark text-pro-muted{% endif %}">
+                 <i class="fas fa-users me-2" aria-hidden="true"></i> Gerenciar Usuários
             </a>
             
+            <div class="list-group-item bg-dark py-2"></div>
+            
+            {# Rota: Sair #}
             <a href="{{ url_for('auth.logout') }}" 
-               class="list-group-item list-group-item-action py-3 hover-warning bg-dark text-danger fw-bold border-top border-secondary mt-2">
-                <i class="fas fa-sign-out-alt me-2"></i> Sair
+               class="list-group-item list-group-item-action py-3 hover-danger bg-dark text-danger fw-bold border-top border-secondary">
+                 <i class="fas fa-sign-out-alt me-2" aria-hidden="true"></i> Sair
             </a>
-        </div>
+        </nav>
     </div>
 </div>

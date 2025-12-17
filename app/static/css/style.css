@@ -1,162 +1,193 @@
 /*
 |--------------------------------------------------------------------------
-| AGENDA PRO - ESTILOS CUSTOMIZADOS (PROFISSIONAL / CORRIGIDO)
+| AGENDA PRO - ESTILOS CUSTOMIZADOS (PROFISSIONAL / UNIFICADO)
 |--------------------------------------------------------------------------
-| Tema Dark / Light com contraste garantido e cores semânticas.
+| Tema Dark / Light com contraste e cores semânticas.
 */
 
 /* =========================================================
- * 1. VARIÁVEIS SEMÂNTICAS DE TEXTO (BASE DO SISTEMA)
+ * 1. VARIÁVEIS DE TEMA E COR DE DESTAQUE
  * ========================================================= */
+
+/* Cores de Destaque Personalizadas (Amarelo/Warning) */
+:root {
+  --warning-primary: #ffc107; /* Amarelo/Laranja (Bootstrap Warning) */
+  --warning-secondary: #ff9800; /* Laranja Escuro */
+}
 
 /* DARK MODE (padrão) */
 [data-bs-theme="dark"] {
-  --text-primary-pro: #f8f9fa;
-  --text-secondary-pro: #adb5bd;
-  --bg-main-pro: #121212;
-  --bg-surface-pro: #1a1a1a;
+  /* Cores de Texto e Fundo Semânticas */
+  --text-primary-pro: #f8f9fa; /* Branco */
+  --text-secondary-pro: #adb5bd; /* Cinza Claro */
+  --bg-main-pro: #14181f; /* Fundo escuro principal (Original: #121212) */
+  --bg-surface-pro: #1f2533; /* Fundo secundário/Card (Original: #1a1a1a) */
 }
 
 /* LIGHT MODE */
 [data-bs-theme="light"] {
-  --text-primary-pro: #212529;
-  --text-secondary-pro: #495057;
-  --bg-main-pro: #f8f9fa;
-  --bg-surface-pro: #e9ecef;
+  /* Cores de Texto e Fundo Semânticas */
+  --text-primary-pro: #212529; /* Preto */
+  --text-secondary-pro: #495057; /* Cinza Escuro */
+  --bg-main-pro: #f8f9fa; /* Fundo Claro */
+  --bg-surface-pro: #e9ecef; /* Fundo secundário/Card Claro */
 }
 
 /* =========================================================
- * 2. FUNDO E LAYOUT
- * ========================================================= */
+* 2. FUNDO E OVERLAY (Estilo Imagem de Fundo)
+* ========================================================= */
+body {
+  /* URL de teste confiável ou substitua pela sua imagem local */
+  background: url("https://picsum.photos/1920/1080?random=130") no-repeat center
+    center fixed;
+  background-size: cover;
+  position: relative;
+  background-color: var(--bg-main-pro); /* Define a cor de fundo padrão */
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  /* Camada escura com opacidade para dar destaque ao conteúdo */
+  background: rgba(10, 10, 10, 0.75);
+  z-index: 0;
+}
+main,
+nav,
+footer {
+  position: relative;
+  z-index: 1;
+}
 
+/* Aplica o background dinâmico ao body se não houver imagem de fundo */
 .bg-dark-pro {
   background-color: var(--bg-main-pro) !important;
   color: var(--text-primary-pro);
-  transition: background-color 0.4s ease, color 0.4s ease;
 }
-
 .bg-dark {
+  /* Usa a cor de superfície para elementos como Navbar/Footer no Dark Mode */
   background-color: var(--bg-surface-pro) !important;
   color: var(--text-primary-pro);
-  transition: background-color 0.4s ease, color 0.4s ease;
 }
-
 .py-6 {
   padding-top: 5rem !important;
   padding-bottom: 5rem !important;
 }
 
 /* =========================================================
- * 3. TEXTO (VISIBILIDADE GARANTIDA)
- * ========================================================= */
+* 3. TEXTO E CORES SEMÂNTICAS
+* ========================================================= */
 
 .text-pro {
   color: var(--text-primary-pro) !important;
 }
-
 .text-pro-muted {
   color: var(--text-secondary-pro) !important;
 }
 
-/* Patch global para textos herdados do Bootstrap */
+/* Patch: Garante que classes de texto Bootstrap (light/white) respeitem o Light Mode */
 [data-bs-theme="light"] .text-light,
 [data-bs-theme="light"] .text-white,
 [data-bs-theme="light"] .text-white-50 {
   color: var(--text-primary-pro) !important;
 }
 
-/* =========================================================
- * 4. NAVBAR
- * ========================================================= */
-
-.navbar {
-  color: var(--text-primary-pro);
-}
-
-.navbar-brand,
-.navbar-nav .nav-link {
-  color: var(--text-primary-pro) !important;
-}
-
+/* Hover de Destaque */
 .hover-warning:hover {
-  color: var(--bs-warning) !important;
+  color: var(--warning-primary) !important;
   text-shadow: 0 0 8px rgba(255, 193, 7, 0.7);
   transition: color 0.3s ease, text-shadow 0.3s ease;
 }
 
 /* =========================================================
- * 5. MOTION CARDS
- * ========================================================= */
-
-.motion-card {
-  border: none !important;
-  border-radius: 0.75rem !important;
-  background-color: var(--bg-surface-pro);
-  color: var(--text-primary-pro);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  will-change: transform, box-shadow;
-}
-
-.motion-card:hover {
-  transform: translateY(-5px) scale(1.02);
-  box-shadow: 0 10px 20px rgba(255, 193, 7, 0.4), 0 5px 10px rgba(0, 0, 0, 0.4) !important;
-  cursor: pointer;
-}
-
-/* =========================================================
- * 6. DROPDOWNS, CARDS E LISTAS
- * ========================================================= */
+* 4. COMPONENTES (Card, Dropdown, List Group)
+* ========================================================= */
 
 .card,
 .list-group-item,
 .dropdown-menu {
   background-color: var(--bg-surface-pro) !important;
   color: var(--text-primary-pro) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important; /* Borda suave no dark */
+  transition: background-color 0.4s ease;
 }
 
+/* Efeito Motion Card */
+.motion-card {
+  border-radius: 0.75rem !important;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  will-change: transform, box-shadow;
+}
+
+.motion-card:hover {
+  transform: translateY(-5px) scale(1.02);
+  /* Sombra épica com a cor de destaque (Warning) */
+  box-shadow: 0 10px 20px rgba(255, 193, 7, 0.4), 0 5px 10px rgba(0, 0, 0, 0.4) !important;
+  cursor: pointer;
+}
+
+/* Dropdown Item Hover */
 .dropdown-item {
   color: var(--text-primary-pro) !important;
 }
-
 .dropdown-item:hover {
-  background-color: var(--bs-warning);
-  color: #212529 !important;
+  background-color: var(--warning-primary);
+  color: var(--bg-main-pro) !important; /* Texto escuro no fundo amarelo */
+}
+
+/* List Group Ativo (Sidebar) */
+.list-group-item.active.bg-warning {
+  background-color: var(--warning-primary) !important;
+  border-color: var(--warning-primary) !important;
+  color: var(--bg-main-pro) !important;
 }
 
 /* =========================================================
- * 7. ALERTAS
- * ========================================================= */
+* 5. SLOTS DE AGENDAMENTO
+* ========================================================= */
+
+/* Botão Selecionado (Substitui .btn-health-primary) */
+.btn-slot.btn-selected,
+.btn-health-primary {
+  background-color: var(--warning-primary) !important;
+  border-color: var(--warning-secondary) !important;
+  color: var(--bg-main-pro) !important;
+}
+
+/* Botão Outline (Para slots disponíveis não selecionados) */
+.btn-outline-success {
+  /* Mapeando o outline do JS/Jinja para a cor Warning */
+  --bs-btn-color: var(--warning-primary);
+  --bs-btn-border-color: var(--warning-primary);
+  --bs-btn-hover-bg: var(--warning-primary);
+  --bs-btn-hover-border-color: var(--warning-secondary);
+  --bs-btn-hover-color: var(--bg-main-pro);
+}
+
+/* Botão Indisponível */
+.btn-slot.btn-unavailable {
+  background-color: var(--bg-surface-pro); /* Fundo sutil */
+  color: var(--text-secondary-pro);
+  cursor: not-allowed;
+  text-decoration: line-through;
+  border: 1px solid var(--text-secondary-pro);
+}
+
+/* =========================================================
+* 6. UTILS E ALERTAS
+* ========================================================= */
+
+.shadow-epic {
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.5) !important;
+}
 
 .alert-dark {
-  background-color: #212529;
+  background-color: #212529; /* Cor escura fixa para destaque */
   color: #f8f9fa;
+  border: 1px solid rgba(255, 193, 7, 0.5); /* Borda sutil de destaque */
 }
 
 .alert .btn-close {
   filter: invert(1);
-}
-
-/* =========================================================
- * 8. LIST GROUP / SIDEBAR
- * ========================================================= */
-
-.list-group-item {
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.list-group-item.active.bg-warning {
-  background-color: var(--bs-warning) !important;
-  border-color: var(--bs-warning) !important;
-  color: #212529 !important;
-}
-
-/* =========================================================
- * 9. BOTÕES DE SLOT
- * ========================================================= */
-
-.btn-slot.btn-unavailable {
-  background-color: #444;
-  color: #999;
-  cursor: not-allowed;
-  border: 1px solid #dc3545;
 }

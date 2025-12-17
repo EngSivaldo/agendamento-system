@@ -6,58 +6,79 @@
 
 {% block content %}
 <div class="row">
+    {# Inclui a barra lateral de navegação da administração #}
     {% include "admin/admin_sidebar.html" %}
     
     <div class="col-md-9">
         
-        <h2 class="mb-5 text-warning fw-light border-bottom border-warning pb-2">
-            <i class="fas fa-calendar-plus me-2"></i> 
+        <h1 class="h2 mb-5 text-warning fw-light border-bottom border-warning pb-2"> {# Alterado h2 para h1 #}
+            <i class="fas fa-calendar-plus me-2" aria-hidden="true"></i> 
             {{ 'Editar Bloco de Horário' if schedule and schedule.id else 'Cadastrar Novo Bloco de Horário' }}
-        </h2>
+        </h1>
+
+        <p class="lead text-pro-muted mb-4">
+            Defina o intervalo de tempo em que os clientes podem agendar neste dia da semana.
+        </p>
         
         <div class="card bg-dark shadow-epic border border-secondary">
-            <div class="card-body p-4">
+            <div class="card-body p-4 p-md-5">
                 
                 {% set form_action = url_for('admin.edit_schedule', schedule_id=schedule.id) if schedule and schedule.id else url_for('admin.new_schedule') %}
-                <form method="POST" action="{{ form_action }}">
+                <form method="POST" action="{{ form_action }}" aria-label="{{ 'Formulário de Edição de Horário' if schedule and schedule.id else 'Formulário de Cadastro de Horário' }}">
                     
                     <div class="mb-4">
-                        <label for="dia_semana" class="form-label text-white-50 fw-bold">
-                            <i class="fas fa-calendar-day me-2 text-warning"></i> Dia da Semana:
+                        <label for="dia_semana" class="form-label text-pro-muted fw-bold"> {# Substituído text-white-50 #}
+                            <i class="fas fa-calendar-day me-2 text-warning" aria-hidden="true"></i> Dia da Semana:
                         </label>
                         <select class="form-select bg-dark text-white border-secondary" id="dia_semana" name="dia_semana" required>
                             {% for key, value in dias_semana_map.items() %}
                                 <option value="{{ key }}" 
-                                    {% if (schedule and schedule.dia_semana == key) or (not schedule and loop.first) %}selected{% endif %}>
+                                    {% if schedule and schedule.dia_semana == key %}selected{% endif %}> {# Simplificado a lógica de seleção #}
                                     {{ value }}
                                 </option>
                             {% endfor %}
                         </select>
+                        <div class="form-text text-pro-muted">
+                            Se houver mais de um bloco para o mesmo dia, os horários serão combinados.
+                        </div>
                     </div>
                     
                     <div class="mb-4">
-                        <label for="hora_inicio" class="form-label text-white-50 fw-bold">
-                            <i class="fas fa-clock me-2 text-warning"></i> Hora de Início:
+                        <label for="hora_inicio" class="form-label text-pro-muted fw-bold">
+                            <i class="fas fa-clock me-2 text-warning" aria-hidden="true"></i> Hora de Início:
                         </label>
-                        <input type="time" class="form-control bg-dark text-white border-secondary" id="hora_inicio" name="hora_inicio" 
-                               value="{{ schedule.hora_inicio if schedule and schedule.hora_inicio else '09:00' }}" required>
+                        <input type="time" 
+                               class="form-control bg-dark text-white border-secondary" 
+                               id="hora_inicio" 
+                               name="hora_inicio" 
+                               value="{{ schedule.hora_inicio if schedule and schedule.hora_inicio else '09:00' }}" 
+                               step="60" {# Sugere passos de 1 minuto, ajuste conforme a necessidade (e.g., 900 para 15min) #}
+                               required>
                     </div>
                     
-                    <div class="mb-4">
-                        <label for="hora_fim" class="form-label text-white-50 fw-bold">
-                            <i class="fas fa-hourglass-end me-2 text-warning"></i> Hora de Fim:
+                    <div class="mb-5">
+                        <label for="hora_fim" class="form-label text-pro-muted fw-bold">
+                            <i class="fas fa-hourglass-end me-2 text-warning" aria-hidden="true"></i> Hora de Fim:
                         </label>
-                        <input type="time" class="form-control bg-dark text-white border-secondary" id="hora_fim" name="hora_fim" 
-                               value="{{ schedule.hora_fim if schedule and schedule.hora_fim else '18:00' }}" required>
+                        <input type="time" 
+                               class="form-control bg-dark text-white border-secondary" 
+                               id="hora_fim" 
+                               name="hora_fim" 
+                               value="{{ schedule.hora_fim if schedule and schedule.hora_fim else '18:00' }}" 
+                               step="60" 
+                               required>
+                        <div class="form-text text-danger mt-3">
+                            A hora de fim deve ser estritamente posterior à hora de início.
+                        </div>
                     </div>
                     
                     <div class="mt-4 pt-3 border-top border-secondary">
                         <button type="submit" class="btn btn-warning fw-bold me-3">
-                            <i class="fas fa-save me-2"></i> 
+                            <i class="fas fa-save me-2" aria-hidden="true"></i> 
                             {{ 'Salvar Alterações' if schedule and schedule.id else 'Cadastrar Bloco' }}
                         </button>
                         <a href="{{ url_for('admin.manage_schedules') }}" class="btn btn-secondary">
-                            <i class="fas fa-times me-2"></i> Cancelar
+                            <i class="fas fa-times me-2" aria-hidden="true"></i> Cancelar
                         </a>
                     </div>
                 </form>

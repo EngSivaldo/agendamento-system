@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    
+    <div class="col-lg-10">
+        
+        <h1 class="h2 mb-5 text-warning fw-light border-bottom border-warning pb-2">
+            <i class="fas fa-user-circle me-2" aria-hidden="true"></i> Detalhes do Perfil
+        </h1>
+        
+        <div class="card bg-dark shadow-epic border border-secondary p-4 p-md-5">
+            <div class="card-body">
+                
+                <div class="text-center mb-5">
+                    <i class="fas fa-id-badge fa-6x text-info mb-3" aria-hidden="true"></i>
+                    <h2 class="text-white fw-bold display-6">{{ user.nome }}</h2>
+                    
+                    {% if user.is_admin %}
+                        <span class="badge bg-danger fw-bold mt-2 py-2 px-3"><i class="fas fa-crown me-1" aria-hidden="true"></i> Administrador</span>
+                    {% else %}
+                        <span class="badge bg-info fw-bold mt-2 py-2 px-3">Cliente Registrado</span>
+                    {% endif %}
+                </div>
+                
+                <hr class="border-secondary my-4">
+
+                <h3 class="h5 text-warning mb-3"><i class="fas fa-info-circle me-2" aria-hidden="true"></i> Informações de Contato</h3>
+                
+                <ul class="list-group list-group-flush mb-5">
+                    
+                    <li class="list-group-item bg-dark text-white border-secondary">
+                        <span class="text-pro-muted fw-bold me-2"><i class="fas fa-envelope me-2" aria-hidden="true"></i> Email:</span>
+                        <span class="text-info">{{ user.email }}</span>
+                    </li>
+                    
+                    {% if user.telefone %}
+                    <li class="list-group-item bg-dark text-white border-secondary">
+                        <span class="text-pro-muted fw-bold me-2"><i class="fas fa-phone me-2" aria-hidden="true"></i> Telefone:</span>
+                        {{ user.telefone }}
+                    </li>
+                    {% endif %}
+
+                    <li class="list-group-item bg-dark text-white border-secondary">
+                        <span class="text-pro-muted fw-bold me-2"><i class="fas fa-calendar-day me-2" aria-hidden="true"></i> Membro Desde:</span>
+                        {# 🚨 CORREÇÃO APLICADA AQUI #}
+                        {% if user.created_at %} 
+                            {{ user.created_at.strftime('%d de %B de %Y') }}
+                        {% else %}
+                            (Data de registro não encontrada)
+                        {% endif %}
+                    </li>
+                    
+                </ul>
+                
+                
+                <h3 class="h5 text-warning mt-5 mb-3"><i class="fas fa-calendar-check me-2" aria-hidden="true"></i> Agendamentos Ativos (Próximos)</h3>
+
+                {% if bookings %}
+                    <div class="table-responsive mb-5">
+                        <table class="table table-dark table-striped table-hover">
+                            <thead class="text-warning border-warning border-bottom">
+                                <tr>
+                                    <th>Serviço</th>
+                                    <th>Data</th>
+                                    <th>Horário</th>
+                                    <th class="text-center">Status</th>
+                                    {% if user == current_user %}
+                                        <th class="text-center">Ações</th>
+                                    {% endif %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings %}
+                                    <tr class="align-middle">
+                                        <td><span class="fw-bold">{{ booking.servico.nome }}</span></td>
+                                        
+                                        {# Aplica checagem preventiva em todas as chamadas de data/hora #}
+                                        <td>
+                                            {% if booking.data_agendamento %}
+                                                {{ booking.data_agendamento.strftime('%d/%m/%Y') }}
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if booking.data_agendamento %}
+                                                {{ booking.data_agendamento.strftime('%H:%M') }} - 
+                                                <span class="text-pro-muted">{{ booking.hora_fim_formatada }}</span>
+                                            {% else %}
+                                                -
+                                            {% endif %}
+                                        </td>
+                                        
+                                        {% set badge_class = {
+                                            'Pendente': 'bg-warning text-dark',
+                                            'Confirmado': 'bg-success',
+                                            'Cancelado': 'bg-danger'
+                                        }.get(booking.status, 'bg-secondary') %}
+                                        <td class="text-center">
+                                            <span class="badge {{ badge_class }} fw-bold">{{ booking.status }}</span>
+                                            
+                                            {# Verifica se o agendamento já passou - também precisa de checagem #}
+                                            {% if booking.data_agendamento and booking.data_agendamento < hoje %}
+                                                <span class="badge bg-secondary ms-2">Concluído</span>
+                                            {% endif %}
+                                        </td>
+                                        
+                                        {% if user == current_user %}
+                                            <td class="text-center">
+                                                {# 🚨 CORREÇÃO APLICADA AQUI #}
+                                                {% if booking.status != 'Cancelado' and booking.data_agendamento and booking.data_agendamento > hoje %}
+                                                    <form action="{{ url_for('client.cancel_booking', booking_id=booking.id) }}" 
+                                                          method="POST" 
+                                                          style="display:inline;" 
+                                                          onsubmit="return confirm('Tem certeza que deseja cancelar este agendamento?');">
+                                                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancelar">
+                                                            <i class="fas fa-times" aria-hidden="true"></i> Cancelar
+                                                        </button>
+                                                    </form>
+                                                {% else %}
+                                                     <span class="text-pro-muted small">Ações Encerradas</span>
+                                                {% endif %}
+                                            </td>
+                                        {% endif %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info bg-dark-pro border-info text-white-50 text-center mb-5">
+                        <i class="fas fa-info-circle me-2"></i> {{ user.nome }} não possui agendamentos ativos no momento.
+                    </div>
+                {% endif %}
+
+
+                {% if user == current_user %}
+                <div class="text-center pt-3 border-top border-secondary mt-5">
+                    <a href="{{ url_for('client.edit_profile') }}" class="btn btn-primary fw-bold me-3">
+                        <i class="fas fa-edit me-2" aria-hidden="true"></i> Editar Meus Dados
+                    </a>
+                    <a href="{{ url_for('auth.change_password') }}" class="btn btn-secondary">
+                        <i class="fas fa-lock me-2" aria-hidden="true"></i> Alterar Senha
+                    </a>
+                </div>
+                {% endif %}
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
