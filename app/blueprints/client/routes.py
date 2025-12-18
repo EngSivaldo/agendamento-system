@@ -365,32 +365,17 @@ def view_profile(user_id):
 @client_bp.route('/perfil/editar', methods=['GET', 'POST'])
 @login_required
 def edit_profile():
-    """Exibe e processa o formulário de edição de perfil do usuário logado."""
-    
-    # 🚨 NOTA: Se você usa WTForms, o formulário deve ser criado separadamente.
-    # Exemplo: form = EditProfileForm(obj=current_user)
-    
-    # Este é um placeholder, assumindo que você não quer usar um formulário complexo agora.
-    # Você deve substituir por um formulário WTForms real.
-    
     if request.method == 'POST':
-        # Lógica de processamento e validação do formulário POST:
-        
-        # 1. Atualizar current_user.nome, current_user.email, etc.
-        # current_user.nome = request.form.get('nome')
-        # ...
-        
-        # 2. Salvar no banco de dados
-        # try:
-        #     current_user.save() 
-        #     flash('Perfil atualizado com sucesso!', 'success')
-        #     return redirect(url_for('client.my_profile'))
-        # except Exception as e:
-        #     db.session.rollback()
-        #     flash(f'Erro ao salvar: {str(e)}', 'danger')
-        pass # Implementação completa será feita na criação do formulário
-    
-    # Retorna o template de edição
-    return render_template('user/edit_profile.html', 
-                           title='Editar Perfil',
-                           user=current_user) # Passa o objeto usuário logado
+        current_user.nome = request.form.get('nome')
+        current_user.email = request.form.get('email')
+        # ❌ NUNCA mexer em current_user.perfil aqui
+
+        db.session.commit()
+        flash('Perfil atualizado com sucesso!', 'success')
+        return redirect(url_for('client.my_profile'))
+
+    return render_template(
+        'user/edit_profile.html',
+        title='Editar Perfil',
+        user=current_user
+    )

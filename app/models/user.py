@@ -5,6 +5,8 @@ from app.models.base import BaseMixin
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.models.booking import Booking  # Verifique se está correto o caminho de importação
+from sqlalchemy.orm import validates
+
 
 class User(db.Model, UserMixin, BaseMixin):
     __tablename__ = 'usuario'
@@ -19,6 +21,10 @@ class User(db.Model, UserMixin, BaseMixin):
     perfil = db.Column(db.String(50), default='Cliente', nullable=False)  # Administrador/Cliente
     is_active = db.Column(db.Boolean, default=True)  # Coluna do Flask-Login
     
+    # 👇 ADICIONE ISTO
+    @property
+    def is_admin(self):
+        return self.perfil == 'Administrador'
     # ==========================================================
     # RELACIONAMENTO COM AGENDAMENTOS
     # ==========================================================
@@ -51,6 +57,16 @@ class User(db.Model, UserMixin, BaseMixin):
     def __repr__(self):
         """Representação do usuário"""
         return f'<User {self.email} ({self.perfil})>'
+    
+    
+    @db.validates('perfil')
+    def validate_perfil(self, key, value):
+        """
+        Impede que o perfil fique vazio ou seja sobrescrito sem intenção
+        """
+        return value or self.perfil or 'Cliente'
+    
+
 
 # ==========================================================
 # COMANDO CLI (Criação do Administrador)
